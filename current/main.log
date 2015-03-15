@@ -1,0 +1,215 @@
+This is TeX, C Version 3.1 (format=latex 96.1.28)  30 MAY 1998 11:15
+**main
+(main.tex
+LaTeX2e <1995/12/01> patch level 1
+(/usr/contrib/lib/tex/inputs/article.cls
+Document Class: article 1995/12/20 v1.3q Standard LaTeX document class
+(/usr/contrib/lib/tex/inputs/size12.clo
+File: size12.clo 1995/11/30 v1.3p Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (main.aux (classsym.aux))
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 146.
+
+
+(/usr/contrib/lib/tex/inputs/OMScmr.fd
+File: OMScmr.fd 1995/12/04 v2.4e Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 146.
+ [1
+
+] (main.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 3.
+
+
+LaTeX Font Warning: Font shape `OT1/cmtt/bx/n' in size <12> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 28.
+
+[1])
+\tf@toc=\write3
+ [2] (main.lof [3])
+\tf@lof=\write4
+ [4]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 171.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 171.
+
+Overfull \hbox (2.4511pt too wide) in paragraph at lines 173--180
+[][]\OT1/cmr/m/n/10.95 This pa-per de-scribes the de-sign of a type sys-tem for
+ the Larch/C++
+ []
+
+(introduction.tex [1] [2] [3] [4] [5]) (typesystem.tex [6] [7]
+Overfull \hbox (10.46854pt too wide) in paragraph at lines 110--134
+\OMS/cmsy/m/n/12 f\OT1/cmtt/m/n/12 float\OT1/cmr/m/n/12 ,\OT1/cmtt/m/n/12 Bool\
+OMS/cmsy/m/n/12 g\OT1/cmr/m/n/12 , and the term \OT1/cmtt/m/n/12 g(b) \OT1/cmr/
+m/n/12 has the set \OMS/cmsy/m/n/12 f\OT1/cmtt/m/n/12 float\OMS/cmsy/m/n/12 g\O
+T1/cmr/m/n/12 . Since the \OT1/cmtt/m/n/12 if-then-else
+ []
+
+[8] [9] [10] [11] [12] [13] [14] [15] [16] [17] [18] [19] [20] [21] [22]
+[23]
+Overfull \hbox (1.689pt too wide) in paragraph at lines 713--723
+\OT1/cmr/m/n/12 Here are some ex-am-ples of how scop-ing and name lookup work i
+n Larch/C++.
+ []
+
+(scopeex1.tex
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 29.
+
+LaTeX Font Info:    No file OMScmtt.fd. on input line 29.
+
+
+LaTeX Font Warning: Font shape `OMS/cmtt/m/n' undefined
+(Font)              using `OMS/cmsy/m/n' instead
+(Font)              for symbol `textbraceleft' on input line 29.
+
+) [24] [25] [26] [27] (scopeex2.tex) (scopeex3.tex) [28] [29] [30]) [31]
+(gramtab.tex
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 3.
+
+
+LaTeX Font Warning: Font shape `OT1/cmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 33.
+
+) [32] [33] [34] [35]
+
+LaTeX Font Warning: Font shape `OMS/cmtt/bx/n' undefined
+(Font)              using `OMS/cmtt/m/n' instead
+(Font)              for symbol `textbraceleft' on input line 394.
+
+[36] [37] [38]
+Overfull \hbox (11.12509pt too wide) detected at line 513
+[]
+ []
+
+
+Overfull \hbox (8.65306pt too wide) detected at line 637
+[]
+ []
+
+[39] [40]
+Overfull \hbox (47.26659pt too wide) detected at line 861
+[]
+ []
+
+[41] [42] [43] [44] [45] [46] [47] [48] [49] (implementation.tex [50]
+(sysover2.tex) [51] [52]
+
+LaTeX Font Warning: Font shape `OT1/cmtt/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 90.
+
+[53] (symtab.tex) [54] (classsym.tex)
+Overfull \hbox (4.14978pt too wide) in paragraph at lines 97--185
+ [] 
+ []
+
+[55] [56
+
+
+] [57]
+Overfull \hbox (41.15158pt too wide) in paragraph at lines 317--317
+[]              \OT1/cmtt/m/n/10.95 DyString("The new definition was ignored an
+d not inserted"));[] 
+ []
+
+[58] [59] [60] [61] [62] [63] [64] [65]
+Overfull \hbox (0.91077pt too wide) in paragraph at lines 654--654
+[]  \OT1/cmtt/m/n/10.95 DyString * lsl_exe = DGetEnv("LSL_EXE_PATH", new DyStri
+ng("lsl"));[] 
+ []
+
+
+Overfull \hbox (23.90552pt too wide) in paragraph at lines 654--654
+[]  \OT1/cmtt/m/n/10.95 sys_str = sys_str + DyString(" > ") + DyString(symsout.
+GetFileName());[] 
+ []
+
+[66] [67] (classes2.tex) [68] [69] (classes.tex) [70] [71] [72] [73] [74]
+[75]
+Overfull \hbox (18.59993pt too wide) in paragraph at lines 1029--1045
+\OT1/cmr/m/n/12 The fi-nal ma-jor piece of sup-port re-quired for sort check-in
+g within the Larch/C++
+ []
+
+[76] [77] [78]
+
+LaTeX Warning: Float too large for page by 6.29755pt on input line 1250.
+
+[79] [80] [81]
+Overfull \hbox (6.65945pt too wide) in paragraph at lines 1350--1350
+[]  \OT1/cmtt/m/n/10.95 illFormed = AddCheckingDeclarable(currentSymTab, sym) |
+| illFormed;[] 
+ []
+
+[82] [83]) [84]
+Overfull \hbox (8.93892pt too wide) in paragraph at lines 1387--1389
+[][]\OT1/cmr/m/n/12 Creation of a for-mal and sys-tem-atic state-ment de-scrib-
+ing the Larch/C++
+ []
+
+[85] (main.bbl [86]
+Underfull \hbox (badness 7944) in paragraph at lines 41--45
+[][]\OT1/cmr/m/n/12 Gary T. Leav-ens.  Larch/C++ Ref-er-ence Man-ual.  Ver-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 41--45
+\OT1/cmr/m/n/12 sion 5.6. ftp://ftp.cs.iastate.edu/pub/larchc++/lcpp.ps.gz or
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 52--55
+[][]\OT1/cmr/m/n/12 MIT/LCS.  LCLint checker, ver-sion 1.4a.  http://larch-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 57--60
+[][]\OT1/cmr/m/n/12 MIT/LCS.  LSL checker, ver-sion 3.1beta3.  http://larch-
+ []
+
+) [87] (main.aux (classsym.aux))
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 529 strings out of 3449
+ 5131 string characters out of 49608
+ 62564 words of memory out of 262141
+ 3318 multiletter control sequences out of 9500
+ 12614 words of font info for 45 fonts, out of 72000 for 255
+ 14 hyphenation exceptions out of 607
+ 22i,17n,24p,203b,473s stack positions out of 300i,40n,60p,3000b,4000s
+
+Output written on main.dvi (92 pages, 229488 bytes).

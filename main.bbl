@@ -1,0 +1,76 @@
+\begin{thebibliography}{10}
+
+\bibitem{Ox}
+Kurt Bischoff.
+\newblock {\em {Ox}: Users Reference Manual}.
+\newblock IA, 1993.
+
+\bibitem{Boehm-Weiser88}
+Hans~J Boehm and Mark Weiser.
+\newblock Garbage collection in an uncooperative environment.
+\newblock {\em Software Practice and Experience}, 18(9):807--820, Sept 1988.
+
+\bibitem{C++Apr95}
+{\em Working Paper for Draft Proposed International Standard for Information
+  Systems -- Programming Language C++}, April 1995.
+
+\bibitem{Ellis-Stroustrup90}
+Margaret~A. Ellis and Bjarne Stroustrup.
+\newblock {\em The Annotated {C}++ Reference Manual}.
+\newblock Addison-Wesley Publishing Co., Reading, Mass., 1990.
+
+\bibitem{Gamma-Helm-Johnson-Vlissides95}
+Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides.
+\newblock {\em Design Patterns: Elements of Reusable Object-Oriented Software}.
+\newblock Addison-Wesley, MA, 1995.
+
+\bibitem{Guttag-Horning93}
+John~V. Guttag, James~J. Horning, S.J. Garland, K.D. Jones, A.~Modet, and J.M.
+  Wing.
+\newblock {\em {Larch}: Languages and Tools for Formal Specification}.
+\newblock Springer-Verlag, New York, N.Y., 1993.
+
+\bibitem{Guttag-Horning-Modet90}
+John~V. Guttag, James~J. Horning, and Andr\'{e}s Modet.
+\newblock Report on the {Larch Shared Language}: Version 2.3.
+\newblock Technical Report~58, Digital Equipment Corporation, Systems Research
+  Center, 130 Lytton Avenue, Palo Alto, CA 94301, April 1990.
+\newblock Order from src-report@src.dec.com.
+
+\bibitem{Leavens96c}
+Gary~T. Leavens.
+\newblock {Larch/C++ Reference Manual}.
+\newblock Version 5.6. ftp://ftp.cs.iastate.edu/pub/larchc++/lcpp.ps.gz or
+  http://www.cs.iastate.edu/\verb|~|leavens/larchc++.html, June 1997.
+
+\bibitem{Levine-Mason-Brown92}
+John~R. Levine, Tony Mason, and Doug Brown.
+\newblock {\em lex and yacc}.
+\newblock O'Reilly and Associates, Inc., CA, 1992.
+
+\bibitem{lclint}
+MIT/LCS.
+\newblock {LCL}int checker, version 1.4a.
+\newblock http://larch-www.lcs.mit.edu:8001/larch/lclint/, June 1997.
+
+\bibitem{LSLChecker}
+MIT/LCS.
+\newblock {LSL} checker, version 3.1beta3.
+\newblock http://larch-www.lcs.mit.edu:8001/larch/lsl.html, June 1997.
+
+\bibitem{Schmidt}
+David~A. Schmidt.
+\newblock {\em The Structure of Typed Programming Languages}.
+\newblock MIT Press, MA, 1994.
+
+\bibitem{Watt90}
+David~A. Watt.
+\newblock {\em Programming Language Concepts and Paradigms}.
+\newblock Prentice Hall, New York, N.Y., 1990.
+
+\bibitem{Wing90a}
+Jeannette~M. Wing.
+\newblock A specifier's introduction to formal methods.
+\newblock {\em Computer}, 23(9):8--24, September 1990.
+
+\end{thebibliography}

@@ -1,0 +1,1423 @@
+\documentclass[12pt]{article} % may want something different here
+
+\newcommand{\code}[1]{\texttt{#1}}      % code examples in text
+\newcommand{\reserved}[1]{\textbf{\texttt{#1}}} % reserved words of Larch/C++
+\newcommand{\type}[1]{\textrm{\textit{#1}}}        % names of types
+
+\newcommand{\RULELAB}[1]{\texttt{#1}}
+
+% a few notations from Dave Schmidt's book
+% ``The Structure of Typed Programming Languages'' (MIT Press).
+\newcommand{\uminus}{\mbox{$\cup\!\!\!\!-$}}
+\newcommand{\udot}{\mbox{$\cup\!\!\!\cdot\,$}}
+
+
+% formatting boxed displays
+\newcommand{\UNSPACEFORBOX}{\vspace{-2ex}}
+\newcommand{\HLINE}{\UNSPACEFORBOX%
+\begin{flushleft}\rule{\textwidth}{0.01in}\end{flushleft}%
+\UNSPACEFORBOX}
+\newenvironment{BFIGURE}{
+
+\begin{figure}
+\small
+\HLINE
+}{
+\HLINE
+\normalsize
+\end{figure}
+}
+
+\newenvironment{BFIGURE*}{
+\begin{figure*}
+\HLINE
+}{
+\HLINE
+\end{figure*}
+}
+
+
+%{obey}
+
+% \myobeycr is same as \obeycr, but doesn't do a \@gobblecr.
+{\catcode`\^^M=13 \gdef\myobeycr{\catcode`\^^M=13 \def^^M{\\}}%
+\gdef\restorecr{\catcode`\^^M=5 }}
+
+% \obeytabs
+{\catcode`\^^I=13 \gdef\obeytabs{\catcode`\^^I=13 \def^^I{\hbox{\hskip 4em}}}}
+
+% \obeyspaces
+{\obeyspaces\gdef {\hbox{\hskip0.5em}}}
+
+% environment for displayed text, indented, obeys cr, tab, spaces
+\newenvironment{obeyDisplay}{%
+\samepage%
+\begin{list}{}{}\item\obeyspaces\obeytabs\obeycr}{%
+\end{list}}
+
+%{grammar}, needs {obey}
+
+%\newcommand{\heading}[1]{\vspace{3ex}{\noindent#1}\vspace{1.5ex}}
+\newcommand{\goesto}{\mbox{$::=$}}
+\newcommand{\arbno}[1]{#1\mbox{\textrm{*}}}
+\newcommand{\nonterm}[1]{\mbox{\it #1}}
+
+\newenvironment{grammar}{
+  \def\:{\goesto{}}
+  \def\|{$\vert$}
+  \tt \myobeycr%
+  \begin{tabbing}%
+  \qquad \= $\vert$ \= \qquad \= \kill%
+}%
+{\unskip\end{tabbing}}
+
+\newenvironment{grammar*}{
+  \def\:{\goesto{}}
+  \def\|{$\vert$}
+  \tt%
+  \begin{tabbing}%
+  \qquad \= $\vert$ \= \qquad \= \kill%
+}%
+{\unskip\end{tabbing}}
+
+\newenvironment{roman-grammar}{
+  \def\:{\goesto{}}
+  \def\|{$\vert$}
+  \myobeycr%
+  \begin{tabbing}%
+  \qquad \= $\vert$ \= \qquad \= \kill%
+}%
+{\unskip\end{tabbing}}
+
+\newenvironment{roman-grammar*}{
+  \def\:{\goesto{}}
+  \def\|{$\vert$}
+  \begin{tabbing}%
+  \qquad \= $\vert$ \= \qquad \= \kill%
+}%
+{\unskip\end{tabbing}}
+
+\newenvironment{mathGrammar}{
+  \def\:{\goesto{}}
+  \def\|{\hbox{$\vert$}}
+   \begin{displaymath}%
+     \tt \obeyspaces%
+}%
+{\unskip\end{displaymath}}
+
+
+
+\addtocounter{tocdepth}{1}
+
+%\documentclass[twoside]{report}
+\begin{document}
+\begin{titlepage}
+\vspace*{1.2in}
+\begin{center}
+{\LARGE Design and Implementation\\ of the Larch/C++\\ Type System} \\
+~ \\
+Matthew W. Markland \\
+ ~ \\
+\end{center}
+
+\thispagestyle{empty}
+\vfill
+{\bf Keywords:} Specification languages; Larch; LSL; Larch/C++; Type Systems;.
+
+
+{\bf 1997 CR Categories:}
+
+\noindent D.1.5 [{\em Programming Techniques}]
+        Object-oriented Programming
+D.2.1 [{\em Software Engineering\/}]
+	Requirements/Spec\-ifications --- languages, Larch,
+        tools
+D.3.3 [{\em Programming Languages\/}]
+        Language Constructs and Features ---  Modules, packages;
+F.3.1 [{\em Logics and Meanings of Programs\/}]
+        Specifying and Verifying and Reasoning about Programs ---
+                assertions, pre- and post-conditions,
+                specification techniques, LSL
+F.3.3 [{\em Logics and Meanings of Programs\/}]
+        Studies of Program Constructs --- Type Structure
+
+\vspace*{0.2in}
+
+\copyright{} 
+        Copyright 1998 by Matthew W. Markland.
+        All rights reserved.
+\begin{center}
+Department of Computer Science \\
+226 Atanasoff Hall \\
+Iowa State University \\
+Ames, Iowa 50011-1040, USA
+\end{center}
+\end{titlepage}
+\pagenumbering{roman}
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+
+
+\bibliographystyle{plain}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\author{Matthew W. Markland }
+\title{Design and Implementation of the Larch/C++ Type System}
+\date{Original work: July 14, 1997 \\ Revised: \today}
+\maketitle
+\begin{abstract}
+This paper describes the design of a type system for the Larch/C++
+specification language. To motivate the features of the type system,
+the type systems of both the Larch Shared Language and C++ are
+described. After this background, an informal description of the
+Larch/C++ type system is followed by a formal presentation of the type 
+rules. The implementation of an infrastructure for the type system is
+then described.
+\end{abstract}
+
+\input{introduction}
+
+\input{typesystem}
+
+\section{Formal Sort Rules for Larch/C++}
+\label{typerules}
+
+
+The following sort rules represent the type system for Larch/C++ in a
+more formal manner. We use the name \emph{sort} here because the
+system is closely related to the LSL system. The rules presented in
+this section are based upon the concrete syntax for Function
+Specifications in Larch/C++, contained in Appendix A of the Larch/C++
+Reference Manual \cite{Leavens96c}. Some of the concrete rules have
+had their names abbreviated in the formal rules to allow for easier
+presentation. An abstract syntax grammar has also been created to
+allow for easier presentation of the rules themselves. Please refer to
+Figures~\ref{fig-abs} and~Figure~\ref{abb-fig} for these shorthands.
+
+\input{gramtab}
+
+\subsection{Notation}
+\label{trnot}
+The following notational conventions are used within these
+rules. A \emph{type environment} is a finite function
+which maps identifiers to corresponding sorts. A type environment has
+the form $\{(\reserved{id:S})\dots\}$ where (\reserved{id:S}) is a pair
+relating the identifier \reserved{id} to the sort
+\reserved{S}. In Larch/C++ a given type environment has two disjoint
+pieces, the set of C++ relations and the set of LSL operator
+relations. These sets, denoted by $C$ and $L$ respectively, are kept
+disjoint for a given scope via the name conflict resolution algorithm
+mentioned earlier.
+
+The complex type environment for a given scope is denoted by $E$, and any subscripted or primed variant, such as
+$E_1$ or $E'$. The statement \reserved{id}:$\tau \in E$ represents the fact that within the
+complex environment $E$, \reserved{id} has a set of sorts $\tau$. Other greek
+letters, such as $\alpha$ and $\beta$, will also be used to represent
+sets of sorts.
+Symbolically the two parts of $E$ will be denoted by a pair
+$(C,L)$, where $C \cap L = \emptyset$.
+
+Type environments can be thought of as set-valued functions.
+Their domain is given by the following.
+\begin{eqnarray}
+dom(\{(i:\tau)\}) & = & i
+\end{eqnarray}
+A type environment, such as $L$,
+can be ``applied'' to an identifier $i$ to yield a set
+of types.  If the identifier is not in its domain, then the empty set is
+returned.
+\begin{equation}
+L(i) = \left\{  \begin{array}{ll}
+\tau, & \mbox{if $(i:\tau) \in L$} \\
+\{\}, & \mbox{otherwise}
+\end{array} \right.
+\end{equation}
+
+The sub-environments $C$ and $L$ may be combined via
+the following operations within a given scope.
+
+\begin{equation}
+(L_1 \cup L_2)  =  \{ (i:L_1(i) \cup L_2(i)) \mid 
+                           i \in dom(L_1) \vee i \in dom(L_2) \}
+\end{equation}
+
+\begin{equation}
+(C_1 \:\udot\: C_2) = \left\{
+ \begin{array}{ll}
+C_1 \cup C_2, & \mbox{if $dom(C_1) \cap dom(C_2) = \emptyset$} \\
+\mbox{undefined}, & \mbox{otherwise}
+\end{array} \right.
+\end{equation}
+
+The above rules try to state what we know about the C++ and LSL
+scoping systems. The rule for $L$ states that if you combine two $L$
+environments, that is equivalent to applying union to the two sets
+with the special case that if an identifier is in both $L_1$ and
+$L_2$, its set of sorts in $L_3$ should contain the complete set of
+sorts. The rule for $C$ environments states that there cannot be a C++ 
+variable name with two distinct types in a single scope.
+
+There are two ways of combining complex type environments. The process 
+of merging two given complex environments to create a single scope is
+done via disjoint union.\emph{disjoint union} (represented by
+$\uplus$), is defined as follows:
+\begin{equation}
+\begin{array}{l}
+(C_1,L_1) \uplus (C_2,L_2) \\
+~~~ = \left\{
+ \begin{array}{ll}
+ (C_1 \:\udot\: C_2, L_1 \cup L_2),
+    & \mbox{if $dom(C_1 \;\udot\: C_2) \cap dom(L_1 \cup L_2) = \emptyset$} \\
+    & \mbox{~~ and $dom(C_1) \cap dom(C_2) = \emptyset$} \\
+\mbox{undefined}, & \mbox{otherwise}
+\end{array} \right.
+\end{array}
+\end{equation}
+Notice that this $\uplus$ operation may generate errors in two cases:
+\begin{itemize}
+\item If a name is in both $C_1$ and $C_2$, there will be an error.
+\item If a name is in $C_1 \udot C_2$ and it is in $L_1 \udot L_2$ also, 
+the system will discard the name from $L_1 \cup L_2$ and issue a
+warning. This is the name conflict resolution algorithm in action.
+\end{itemize}
+
+A second way to merge two complex type environments together is called
+shadow union. \emph{Shadow union} ,represented by the $\uminus$
+symbol~\cite{Schmidt}, is used to describe the complex type
+environment created by combining two environments from different
+scopes. In essence, it embodies how names are hidden due to the scoping system by the name lookup algorithm. The expression $E_1 \uminus E_2$ means that a new type
+environment is created where the following holds:
+\begin{equation}
+\begin{array}{l}
+(C_1,L_1) \uminus (C_2,L_2) \\
+~~~ =
+\begin{array}{l}
+(C_2 \cup \{(i:\tau) \mid (i:\tau) \in C_1, i \notin dom(C_2),
+                          i \notin dom(L_2))\} , \\
+ ~\{(i:\tau) \mid (i:\tau) \in (L_1 \cup L_2), i \notin dom(C_2)\}
+)
+\end{array}
+\end{array}
+\end{equation}
+
+The idea is that, as you enter a new scope, any identifiers declared
+in that new scope shadow the previous declarations in the type
+system. In the above formula, $E_1$ is the existing type environment
+and $E_2$ is the type environment of the new scope. If a pair with
+identifier \reserved{i} is in $E_1$ and not in $E_2$, it may
+remain. Otherwise, the pair from $E_2$ shadows the pair in $E_1$.
+
+Figure~\ref{typeruleex} illustrates the general format for the formal
+sort rules. The structure of each rule is as follows. The bracketed
+item on the left is the name of the rule. The middle section consists
+of an optional top portion and a bottom portion separated by dividing
+line. The top portion is the \emph{hypothesis}, the bottom is the
+\emph{conclusion}, and the horizontal bar means logical
+implication. This means that a given rule should be interpreted as follows:
+if the hypothesis is true, the conclusion should also be true. Within
+these rules, the $\vdash$ operator also represents implication. In
+this case, an expression such as $E \vdash x$ means that if $E$ is
+assumed, then $x$ can be proved. Another way of thinking about the
+$\vdash$ operator is that the left side represents the attributes
+inherited from parents in the syntax tree. The set of sorts to the
+right of the colon (\reserved{:}) in the rule represent the
+synthesized attributes created by checking the syntactic form between
+the $\vdash$ and the \reserved{:}. A
+term that sort checks correctly, but for which the sort is unimportant 
+has the colon and sort replaced by a $\surd$. Possible
+sets of types that a given expression may have are represented by
+$\tau$, $\alpha$, and $\beta$. Function types are represented via the
+standard $\rightarrow$ notation. To the right of the rule, the
+\emph{side conditions} state other necessary conditions for the rule
+to be applied.
+
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[EXAMPLE]} &
+\begin{array}{c}
+\mbox{\textit{E}} \vdash \mbox{\texttt{foo}}:\beta,\\
+\mbox{\textit{E}} \vdash \mbox{\texttt{x}}:\alpha \\
+\hline
+E \vdash \mbox{\texttt{foo(x)}}:\tau
+\end{array}
+&
+\begin{array}{l}
+\mbox{if } \tau = \{n_1 \dots n_k\}, \\
+\alpha = \{m_1 \dots m_k\} \\
+\beta = \{m_1 \rightarrow n_1 \dots m_k \rightarrow n_k\} \\
+k > 0
+\\
+\end{array}
+\end{array}
+\end{displaymath}
+\caption{An example type rule}
+\label{typeruleex}
+\end{BFIGURE}
+
+For the example in Figure~\ref{typeruleex}, the name of the rule is
+\reserved{[EXAMPLE]}. The rule itself states that given the
+environment $E$, if it can be shown that \reserved{foo} has set of types
+$\beta$ and that \reserved{x} has set of sorts $\alpha$, and the side
+annotations hold, then it can be
+stated that given $E$ the expression \reserved{foo(x)} has the set of 
+types $\tau$. The side condition states that for the implication to be
+true, it must be demonstrated that $\alpha$ contains a set of input sorts,
+and that $\beta$ contains the correct functions to map the $m$ sorts to
+their related $n$ sorts. If this holds, then $\tau$ should be the set
+of $k$ sorts $\{n_1 \dots n_k\}$.
+
+\subsection{The Formal Sort Rules}
+An attempt has been made to break the formal rules into sets of rules
+that have similar structures or related conclusions. For the most
+part, the rules are allowed to describe themselves.
+
+
+
+\subsubsection{Top Level Rules}
+\label{toprules}
+
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[FUN-SPEC-BODY]} &
+\begin{array}{c}
+E \vdash \mbox{\it ES} \Rightarrow E_1,\\
+E \vdash \mbox{\it US} \Rightarrow E_2,\\
+E \vdash \mbox{\it DS}\Rightarrow E_3,\\
+E \uminus (E_1 \uplus E_2 \uplus E_3) \vdash \mbox{\it SCS}~\surd\\
+\hline
+E \vdash \mbox{\reserved{behavior} \reserved{\{} \textit{ES US DS SCS} \reserved{\}}} \surd
+\end{array}
+&
+\begin{array}{c}
+\mbox{if }(E_1 \cap E_2) = \emptyset,\\
+(E_1 \cap E_3) = \emptyset,\\
+(E_2 \cap E_3) = \emptyset
+\end{array}
+\\
+~\\
+\RULELAB{[SCS]} &
+\begin{array}{c}
+E \vdash \mbox{\it SC}~\surd,~E \vdash \mbox{\it SCS}~\surd\\
+\hline
+E \vdash \mbox{\textit{SC} \reserved{also} \textit{SCS}}~\surd
+\end{array}
+\\
+~\\
+\RULELAB{[SC]} &
+\begin{array}{c}
+E \vdash \mbox{\it LC} \Rightarrow E',\\
+E \uminus E' \vdash \mbox{\it RFE}~ \surd,\\
+E \uminus E' \vdash \mbox{\it EX}~ \surd,\\
+E \uminus E' \vdash \mbox{\it CS}~ \surd\\
+\hline
+E \vdash \mbox{\it LC RFE EX CS}~ \surd
+\end{array}
+\\
+~\\
+\RULELAB{[RFE]} &
+\begin{array}{c}
+E \vdash \textit{RC}~\surd,E \vdash \textit{FR}~\surd,E\vdash \textit{EC}~ \surd\\
+\hline
+E \vdash \mbox{\it RC FR EC }~\surd
+\end{array}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{Top level rules}
+\label{fig-one}
+\end{BFIGURE}
+Figure ~\ref{fig-one} illustrates the rules that describe the top
+level of the type checking system. Of these, the rule for
+\RULELAB{[FUN-SPEC-BODY]} is probably the most interesting. Notice
+that the rule creates new type environments from the expects sequence,
+the uses sequence, and the declaration sequence. 
+These individual
+environments are then shadow unioned to the existing
+environment. Remember that the shadow union will override any existing
+information about a variable in $E$ with the information contained in
+$(E_1 \uplus E_2 \uplus E_3)$. This modification of the environment
+corresponds to the creation of the function-specification scope in
+which the actual specification will be sort checked (see
+section~\ref{lcppts} for a description of the scoping system). The
+function-specification-body will sort check if the specification
+represented by the \textit{SCS} sort checks within the newly created
+environment. 
+\begin{BFIGURE}
+\begin{verbatim}
+fooTrait:trait
+     introduces
+        foo: int -> int
+        y: -> float
+
+Restrictions:trait
+     introduces
+        x:->int
+        y:->int
+        foo:int->float
+        globalInt:->float
+\end{verbatim}
+\caption{Traits used in type environment expansion example}
+\label{expandmealso}
+\end{BFIGURE}
+
+\begin{BFIGURE}
+\begin{verbatim}
+int foo(int x);
+//@ behavior {
+//@    uses fooTrait;
+//@    expects Restrictions;
+//@    extern int globalInt;
+//@
+//@    modifies globalInt;
+//@    ensures globalInt' = x^;
+//@ }
+\end{verbatim}
+\caption{Example of type environment expansion}
+\label{expandme}
+\end{BFIGURE}
+An example of how the environments are created and combined for the
+\RULELAB{[FUN-SPEC-BODY]} rule can be illustrated using the traits in Figure~\ref{expandmealso} and the function
+specification in Figure~\ref{expandme}. To begin with the uses
+sequence will process
+\reserved{fooTrait} using the LSL Checker as described before to
+generate sort 
+information for the operations defined in the trait. This leads to the 
+generation of a type environment $(C,L)$ for \reserved{fooTrait} which looks
+like
+\begin{displaymath}
+\begin{array}{l}
+C = \{\}
+\\
+L =\{\mbox{\reserved{foo:\{int->int\}, y:\{->float\}}}\}
+\end{array}
+\end{displaymath}
+
+Similarly, the expects
+sequence will process its list of traits by running them through the
+LSL Checker and saving their output. In this case a type environment
+$(C_1,L_1)$ is generated which looks like
+
+\begin{displaymath}
+\begin{array}{l}
+C_1 = \{\}
+\\
+L_1 =\{\mbox{\reserved{x:\{->int\},y:\{->float\},foo:\{int->float\}, globalInt:\{->int\}}}\}
+\end{array}
+\end{displaymath}
+
+Finally, the declaration sequence takes the C++ declaration
+list which it contains and generates its own type environment
+$(C_2,L_2)$ which looks like
+
+\begin{displaymath}
+\begin{array}{l}
+C_2 = \{\mbox{\reserved{globalInt:\{->int\}}}\}
+\\
+L_2 =\{\}
+\end{array}
+\end{displaymath}
+
+These individual environments are then combined via disjoint union to
+create a single type environment that will be shadow unioned to the
+environment that existed before we entered \reserved{foo}'s
+fun-spec-body to create the environment that will be used to sort
+check the fun-spec-body. This environment, $(C_x,L_x) = (C,L) \uplus (C_1,L_1)
+\uplus (C_2,L_2)$, would contain the following
+
+\begin{displaymath}
+\begin{array}{l}
+C_x = \{\mbox{\reserved{globalInt:\{->int\}}}\}
+\\
+L_x =\{\mbox{\reserved{x:\{->int\},y:\{->float,->int\},foo:\{int->float,int->int\}}}\}
+\end{array}
+\end{displaymath}
+
+\noindent Notice that \reserved{y} and \reserved{foo} now have sets of 
+sorts associated with them and that the trait operation
+\reserved{globalInt} was removed from the LSL portion of the
+environment due to the C++ declaration that contained the same name.
+
+Similarly, the rule for \RULELAB{[SC]} shows the creation of the
+spec-case scope via the shadow union of the existing environment with
+the environment generated by the let clause. Then the spec-case sort
+checks if its individual pieces sort check within the newly created
+environment.
+
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[IDSEQ1]} &
+\begin{array}{l}
+E \vdash \mbox{\nonterm{IDSEQ}} \Rightarrow E', E \vdash T:\tau, \\
+E \vdash S \reserved{ OK} \\
+\hline
+E \vdash \mbox{\nonterm{IDSEQ }} id:S \reserved{ be } T \Rightarrow E'''
+\end{array}
+&
+\begin{array}{l}
+\mbox{if } S \in \tau, E''' = E' \uplus \{(id:\{S\})\} \\
+\mbox {See text.}
+\end{array}
+\\
+~\\
+\RULELAB{[IDSEQ2]} &
+\begin{array}{l}
+E \vdash id:S \Rightarrow E', E \vdash S \reserved{ OK} \\
+\hline
+E \vdash id:S \Rightarrow E' \\
+\end{array}
+&
+\mbox{if } E' = \{(id:S)\}
+\\
+~\\ 
+\RULELAB{[LC]} &
+\begin{array}{l}
+E \vdash IDSEQ => E'\\
+\hline
+E \vdash \mbox{\reserved{let} \textit{IDSEQ}} \Rightarrow E'
+\end{array}
+
+\\
+~\\
+\RULELAB{[ES]} &
+\begin{array}{c}
+E \vdash \mbox{\it ES} \Rightarrow E'
+\end{array}
+& \mbox{See text.}\\
+~\\
+\RULELAB{[US]} &
+\begin{array}{c}
+E \vdash \mbox{\it US} \Rightarrow E'
+\end{array}
+& \mbox{See text.}
+\\
+~\\
+\RULELAB{[DS]} &
+\begin{array}{c}
+E \vdash \mbox{\it DS} \Rightarrow E'
+\end{array}
+& \mbox{See text.}
+\\
+~\\
+\RULELAB{[Q]} &
+\begin{array}{c}
+E \vdash \tau_1~\mbox{\tt OK},\dots,E \vdash \tau_n~\mbox{\tt OK} \\
+\hline
+E \vdash \mbox{\it QS }
+x_1\mbox{\reserved{:}}\tau_1\mbox{\reserved{,}}
+\dots\mbox{\reserved{,}} x_n\mbox{\reserved{:}}\tau_n \Rightarrow E'
+\end{array}
+&
+\begin{array}{l}
+E' = x _1:\tau _1,\dots,x _n:\tau_n, \\
+n>0, \\
+\mbox{See text for a description of \tt OK}
+\end{array}
+\\
+~\\
+\RULELAB{[Q1]} &
+\begin{array}{c}
+E \vdash Q \Rightarrow E', \\
+E \uminus E' \vdash T:\tau \\
+\hline
+E \vdash Q(T):\{\reserved{Bool}\}
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{Rules affecting the type environment}
+\label{xxxxx}
+\end{BFIGURE}
+
+\subsubsection{Rules Affecting the Type Environment}
+The rules in Figure~\ref{xxxxx} serve to show the points at which the
+existing type environment may be extended. In some cases, such as the
+rules for quantifiers (\RULELAB{[Q]} and \RULELAB{[Q1]}, the extension
+occurs at the point when a new scope is entered. Remember from the
+description of the Larch/C++ scoping system (Section ~\ref{lcppts})
+that quantifiers introduce a new scope. The rules show that the type
+environment for this scope will contain the new identifiers declared
+within the quantifier. The \reserved{OK} marker is there to denote
+that the sort $S$ is allowable. By \reserved{allowable} it is meant
+that declarations in LSL cannot introduce new sorts; they can only
+refer to previously mentioned sorts. Thus the judgement $E \vdash
+m$\reserved{ OK} means that within the type environment $E$ the sort
+$m$ must exist. This modifier will be used in later rules also.
+
+The other rules listed here do not create a new scope to contain the
+new type environment; instead they augment the existing environment. However,
+they all create a new environment that may shadow previous
+declarations. Note that the let clause (\RULELAB{[LC]}) shares the
+requirement that the sort associated with a declared identifier should
+have existed in the previous type environment.
+
+\subsubsection{Predicate Rules}
+\label{predrules}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{llc}
+
+\RULELAB{[RC1]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{requires} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\\
+\RULELAB{[RC2]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{requires} \reserved{liberally} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\
+\RULELAB{[FR]} &
+\begin{array}{c}
+E \vdash \mbox{\it MC}~ \surd,~E \vdash \mbox{\it TC}~ \surd\\
+\hline
+E \vdash \mbox{\it FR}~ \surd
+\end{array}
+\\
+~\\
+\RULELAB{[EC1]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{ensures} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\
+\RULELAB{[EC2]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{ensures} \reserved{liberally} }\mathcal{P}~\surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\
+~\\
+\RULELAB{[EX1]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{example} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\\
+\RULELAB{[EX2]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{example} \reserved{liberally} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\
+\RULELAB{[CS1]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{claims} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\\
+\RULELAB{[CS2]} &
+\begin{array}{c}
+E \vdash \mathcal{P}: \tau\\
+\hline
+E \vdash \mbox{\reserved{claims} \reserved{liberally} }\mathcal{P}~ \surd
+\end{array}
+&
+\mbox{if $Bool \in \tau$}
+\\
+~\\
+\RULELAB{[informally]} &
+\begin{array}{c}
+E \vdash \mbox{\reserved{informally} \textit{SLS}} : \{\reserved{Bool}\}
+\end{array}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{Predicate rules}
+\label{fig-two}
+\end{BFIGURE}
+Figure~\ref{fig-two} contains the rules for predicates. Note that as
+mentioned in Section~\ref{lcppts}, a given construct may have a set of
+types associated with it. Remember also that if an item sort checks in
+LSL, it should be possible to assign a unique type to the
+term. Predicates, represented by $\mathcal{P}$, are a special
+case. They must have the sort \reserved{Bool} as an element of their
+set of sorts.
+
+\subsubsection{Term Rules}
+\label{termrules}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[IF]} &
+\begin{array}{c}
+E \vdash T_1:\tau',~E \vdash T_2:\alpha,~E \vdash T_3:\beta \\
+\hline
+E \vdash \mbox{\reserved{if} }T_1 \mbox{ \reserved{then} } T_2 \mbox{
+\reserved{else} } T_3:\tau
+\end{array}
+&
+\begin{array}{l}
+\mbox{if } Bool \in \tau',\\
+\tau = \alpha \cap \beta,\\
+\tau \not= \emptyset
+\end{array}
+\\
+~\\
+\RULELAB{[LT]} &
+\begin{array}{c}
+E \vdash (\mbox{\it OP}_{l})(T_1,T_2):\tau \\
+\hline
+E \vdash T_1~ OP_l~ T_2:\tau
+\end{array}
+\\
+~\\
+\RULELAB{[OP$_{lsl}$]} &
+\begin{array}{c}
+E \vdash (\mbox{\it OP}_{lsl})(\mbox{\it SEC}):\tau\\
+\hline
+E \vdash \mbox{\textit{OP}$_{lsl}$~\it SEC}:\tau
+\end{array}
+\\
+~\\
+\RULELAB{[OP$_{lsl}$2]} &
+\begin{array}{c}
+E \vdash (\mbox{\it OP}_{lsl})(\mbox{\textit{SEC}$_1$,\textit{SEC}$_2$}):\tau\\
+\hline
+E \vdash \mbox{\textit{SEC}$_1$ \textit{OP}$_{lsl}$ \textit{SEC}$_2$}:\tau
+\end{array}
+\\
+~\\
+\RULELAB{[P0]} &
+(C,L) \vdash \mbox{\it ID}:\tau
+&
+\mbox{if \textit{ID}:$\tau \in C$}
+\\
+~\\
+\RULELAB{[P1]} &
+(C,L) \vdash \mbox{\it ID}:\tau
+&
+\mbox{if \textit{ID}:$\tau \notin C$,~\textit{ID}:$\tau \in L$}
+\\
+~\\
+\RULELAB{[P2]} &
+\begin{array}{c}
+E \vdash T_1:\tau_1,\dots,E \vdash T_n:\tau_n,~ E \vdash F:\tau \\
+\hline
+E \vdash \mbox{\textit{F}}(T_1,\dots,T_n):\tau'
+\end{array}
+&
+\begin{array}{l}
+\mbox{if } \tau' = \{m_1',\dots,m_k'\},\\
+m_1 \in \tau_1 \times \dots \times \tau_n,~m_1 \rightarrow m_1' \in
+\tau,\\
+\vdots\\
+m_k \in \tau_1 \times \dots \times \tau_n,~m_k \rightarrow m_k' \in
+\tau,\\
+k > 0
+\end{array}
+\\
+~\\
+\RULELAB{[PRIM1]} &
+\begin{array}{c}
+E \vdash (\mbox{\reserved{\_\_.}}\mbox{\it ID})(P):\tau \\
+\hline
+E \vdash P\mbox{\reserved{.}}\mbox{\it ID}:\tau
+\end{array}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{Term rules}
+\label{fig-term}
+\end{BFIGURE}
+
+Figure~\ref{fig-term} contains most of the rules for the sort checking
+Larch/C++ terms. Recall from Section~\ref{lcppts} that
+Larch/C++ and LSL sort check terms identically. Thus rules, such as
+if-then-else (\RULELAB{[IF]}), represent the ideas expressed in
+Sections~\ref{lslts} and~\ref{lcppts}. Notice the side condition that
+states that the conditional's test term, $T_1$, must have \reserved{Bool} in its
+set of types, and that the resulting sort consists of the non-empty
+intersection of the possible sorts for $T_2$ and $T_3$. It might seem
+that $\tau$ should have a cardinality of one at this point so that
+there would be a single sort associated with the operator. However, it
+is important to remember that the context surrounding the use of the
+if-then-else operator should serve to narrow $\tau$ as the sort
+checking process continues. Thus, the cardinality need not be one at
+this point.
+
+Of the rules listed here, the operator application rule
+,\RULELAB{[P3]}, probably has the most impact on the system. The
+behavior embodied in this rule is used within any rule that may act
+like a function call (\RULELAB{[PRIM1]}, \RULELAB{[OP$_{lsl}$]},
+\RULELAB{[OP$_{lsl}$2]}, the sc-bracketed rules,\RULELAB{[LT]}, and
+others). Since trait functions are overloaded, and the overload
+resolution involves context, a given operator name can have a set of
+possible return sorts. Each of these return sorts has a corresponding set
+of domain sorts that is the cross-product of the sorts of the
+arguments. For a function application to sort check, it must be shown
+that given a set of return sorts there must be a function signature
+that consists of the cross-product of the sets of types of the
+arguments. For example, given the following signatures for a function
+foo:
+
+\begin{verbatim}
+foo: int -> float
+foo: char -> Bool
+foo: float -> int
+foo: int -> int
+\end{verbatim}
+
+\noindent and a use of foo in the following specification:
+
+\begin{verbatim}
+int bar(int x);
+//@ behavior {
+//@   ensures result = foo(x);
+//@ }
+\end{verbatim}
+
+\noindent Here \reserved{foo} has the set of signatures \{\reserved{int -> float,char
+-> Bool,float -> int, int -> int}\} associated with it. In this case,
+since \reserved{=} requires that the two arguments have the same sort
+and the sort of \reserved{result} is known to be \reserved{int}, the
+set of possible signatures for \reserved{foo} is \{\reserved{float ->
+int, int -> int}\}. From this set, only one signature has the correct
+sort for the argument \reserved{x}. So in this case, the operator
+\reserved{foo} will have the signature \reserved{int -> int}, and the
+statement \begin{verbatim} result = foo(x) \end{verbatim} will sort
+check.
+
+\subsubsection{sc\_bracketed Rules}
+\label{scbrules}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{llc}
+\RULELAB{[SC-B]} &
+\begin{array}{c}
+E \vdash (\mbox{\reserved{[]}})(T_1,\dots,T_n):\tau \\
+\hline
+E \vdash \mbox{\reserved{[}}T_1,\dots,T_n\mbox{\reserved{]}}:\tau
+\end{array}
+\\
+~\\
+\RULELAB{[SC-B2]} &
+\begin{array}{c}
+E \vdash (\mbox{\reserved{\{\}}})(T_1,\dots,T_n):\tau\\
+\hline
+E \vdash \mbox{\reserved{\{}} (T_1,\dots,T_n) \mbox{\reserved{\}}}:\tau
+\end{array}
+\\
+~\\
+\RULELAB{[SC-B3]} &
+\begin{array}{c}
+E \vdash (\verb|\|\mbox{\reserved{langle}}\verb|\|\mbox{\reserved{rangle}})(T_1,\dots,T_n):\tau\\
+\hline
+E \vdash \verb|\|\mbox{\reserved{langle}} (T_1,\dots,T_n) \verb|\|\mbox{\reserved{rangle}}:\tau
+\end{array}
+\\
+~\\
+\RULELAB{[SC-B4]} &
+\begin{array}{c}
+E \vdash (\verb|\|\mbox{\reserved{<}}\verb|\|\mbox{\reserved{>}})(T_1,\dots,T_n):\tau\\
+\hline
+E \vdash \verb|\|\mbox{\reserved{<}} (T_1,\dots,T_n) \verb|\|\mbox{\reserved{>}}:\tau
+\end{array}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{sc-bracketed rules}
+\label{fig-bracket}
+\end{BFIGURE}
+
+The sc-bracketed rules are used for operators that have signatures
+similar to the following.
+\begin{verbatim}
+[ __ , __ ]: int , int -> Pair[int]
+\end{verbatim}
+These functions may be formed by builtins, such as
+tuple constructors, or may be defined by the specifier.
+
+\subsubsection{State Function Rules}
+\label{staterules}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+
+\RULELAB{[STATE1]} &
+\begin{array}{c}
+E \vdash P:\tau \\
+\hline
+E \vdash P\mbox{\reserved{$\diamond$}}:\tau'
+\end{array}
+&
+%\begin{array}{l}
+%\mbox{let }strip(\mbox{\reserved{ConstObj[T]}}) = \mbox{T and } strip(\mbox{\reserved{Obj[T]}}) = \mbox{T},\\
+%strip(\{S_1,\dots,S_n\}) = \{strip(S_1),\dots,strip(S_n)\},\\
+%selobjs(\{S_1,\dots,S_n\})\\
+%=\{S_i | 1 \leq i \leq n, S_i\mbox{ has form \reserved{Obj[T]} or \reserved{ConstObj[T]}}\},\\
+\mbox{if }\tau' = strip(selobjs(\tau))
+%\end{array}
+\\
+~\\
+\RULELAB{[STATE2]} &
+\begin{array}{c}
+E \vdash P:\tau \\
+\hline
+E \vdash P\verb|\|\mbox{\reserved{obj}}:\tau
+\end{array}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{State functions}
+\label{state-fig}
+\end{BFIGURE}
+Larch/C++ specifications have the ability to describe the
+abstract value contained within a given object. To do this,
+Larch/C++ has a formal model that describes the relationship between
+objects and their values. This is described in Section 2.8 of the
+Reference Manual \cite{Leavens96c}. Most of the time, a C++
+declaration will create an object containing an abstract value. The
+state of the variable ``associates to each object, an abstract
+value.'' \cite[page 21]{Leavens96c}. State functions allow a specifier to
+extract the abstract value for a variable for a specific state. For
+example, the C++ declaration \begin{verbatim} int i; \end{verbatim}
+creates an object with the following sort.
+ \begin{verbatim} 
+Obj[int]
+\end{verbatim}
+A state function, when applied to \reserved{i}, returns the value for
+the state, which has sort \reserved{int}. Please refer to the
+Reference Manual \cite[Section 6.2.1]{Leavens96c} for more details.
+
+Figure~\ref{state-fig} illustrates the rules for state functions. Two
+auxiliary functions, $strip$ and $selobjs$, defined below, allow for
+the extraction of abstract values. 
+
+\begin{displaymath}
+\begin{array}{l}
+strip(\mbox{\reserved{ConstObj[T]}}) = \reserved{T} \\
+\\
+strip(\mbox{\reserved{Obj[T]}}) = \reserved{T}\\
+\\
+strip(\{S_1,\dots,S_n\}) = \{strip(S_1),\dots,strip(S_n)\}\\
+\\
+selobjs(\{S_1,\dots,S_n\})\\
+~~~=\{S_i | 1 \leq i \leq n, S_i\mbox{ has form \reserved{Obj[T]} or \reserved{ConstObj[T]}}\},\\
+\end{array}
+\end{displaymath}
+
+\noindent $strip$ takes an object type, and
+strips off the object portion, leaving the value. For example,
+$strip(\reserved{Obj[int]})$ would return \reserved{int}. $selobjs$
+takes a set of sorts and builds a subset consisting of the object
+sorts. Used in conjunction, $strip$ and $selobjs$ create a set of
+values that the object may have for the given state.
+
+\subsubsection{Miscellaneous Rules}
+\label{miscrules}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[HOC]} &
+\begin{array}{c}
+E \vdash \mbox{\it FI} \Rightarrow E',\\
+E \uminus E'\vdash \mbox{\textit{FSB}}: \surd \\
+\hline
+E \vdash \mbox{\textit{OP}$_{lsl}$}\mbox{\reserved{ satisfies} \textit{FI FSB}}:\{\reserved{Bool}\}
+\end{array}
+&
+\begin{array}{l}
+\mbox{If $E'$ is as described } \\
+\mbox{in the text.}
+\end{array}
+\\
+~\\
+\RULELAB{[EQ]} &
+\begin{array}{c}
+E \vdash \mbox{\textit{OP}$_{{lsl}_1}$}:\alpha,~E \vdash \mbox{\textit{OP}$_{{lsl}_2}$}:\beta \\
+\hline
+E \vdash \mbox{\textit{OP}$_{{lsl}_1}$ \textit{EQ} \textit{OP}$_{{lsl}_2}$}:\{\reserved{Bool}\}
+\end{array}
+&
+\mbox{if $| \alpha \cap  \beta | = 1$}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{Miscellaneous rules}
+\label{fig-three}
+\end{BFIGURE}
+In Larch/C++ \emph{higher-order} functions are functions which either
+take pointers to functions as arguments, or return pointers to
+functions \cite{Leavens96c}. The rule \RULELAB{[HOC]} in
+Figure~\ref{fig-three} is the rule for the higher-order-comparison
+used in the specification of higher-order functions. The
+function-interface (\textit{FI}) is used to create a new type
+environment, $E'$, from the formal parameters of the function
+interface. Then the fun-spec-body(\textit{FSB}) is sort checked in
+accordance with the rule presented earlier. Please see the Reference
+Manual \cite[Section 6.12]{Leavens96c} for more information on
+higher-order functions.
+
+\subsubsection{Literal Rules}
+Figures~\ref{fig-lit} and~\ref{fig-cpplit} illustrate the sort rules
+for some of the literals. They are divided into the Larch/C++ basic
+sorts and the special C++ literals. These rules show that the basic
+building blocks have the specific sorts dictated by C++. The rule
+\RULELAB{[LIT2]} serves as a model for the formulation of sorts for
+the unsigned types. For a complete list, please see the Reference
+Manual ~\cite[Chapter 11]{Leavens96c}.
+
+\label{literalrules}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[LIT1]} &
+E \vdash int\_const:\{\mbox{\texttt int}\}
+\\
+~\\
+\RULELAB{[LIT2]} &
+E \vdash unsigned_ int\_const:\{\mbox{\texttt unsignedInt}\}
+\\
+~\\
+\RULELAB{[LIT3]} &
+E \vdash float\_const:\{\mbox{\texttt double}\}
+\\
+~\\
+\RULELAB{[LIT4]} &
+E \vdash char\_const:\{\mbox{\texttt char}\}
+\\
+~\\
+\RULELAB{[LIT5]} &
+E \vdash \mbox{\reserved{L }}char\_const:\{\mbox{\texttt wchar\_t}\}
+\\
+~\\
+\RULELAB{[LIT6]} &
+E \vdash string\_literal:\{\mbox{\texttt Arr[Obj[char]]}\}
+\\
+~\\
+\RULELAB{[LIT7]} &
+E \vdash \mbox{\reserved{L }}string\_literal:\{\mbox{Arr[Obj[wchar\_t]]}\}
+\\
+~\\
+\RULELAB{[LIT8]} &
+E \vdash abstract\_string\_literal:\{\mbox{\texttt String[char]}\}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{A sampling of literal rules}
+\label{fig-lit}
+\end{BFIGURE}
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[this]} &
+E \vdash \mbox{\reserved{this}}:\tau
+&
+\mbox{if $E(\mbox{\tt this}) = \tau$}
+\\
+~\\
+\RULELAB{[self]} &
+E \vdash \mbox{\reserved{self}}:\tau
+&
+\mbox{if $E(\mbox{\tt self}) = \tau$}
+\\
+~\\
+\RULELAB{[result]} &
+E \vdash \mbox{\reserved{result}}:\tau
+&
+\mbox{if $E(\mbox{\texttt{result}}) = \tau$}
+\\
+~\\
+\RULELAB{[pre]} &
+E \vdash \mbox{\reserved{pre}}:\{State\}
+\\
+~\\
+\RULELAB{[post]} &
+E \vdash \mbox{\reserved{post}}:\{State\}
+\\
+~\\
+\RULELAB{[any]} &
+E \vdash \mbox{\reserved{any}}:\{State\}
+\\
+~\\
+\RULELAB{[sizeof]} &
+E \vdash \mbox{\reserved{sizeof(}}type\mbox{\reserved{)}}:\{int\}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{More literal rules}
+\label{fig-cpplit}
+\end{BFIGURE}
+
+\subsubsection{Storage Rules}
+\label{storerules}
+
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[fresh]} &
+\begin{array}{c}
+E \vdash T_1:\tau_1,\dots, E \vdash T_n:\tau_n\\
+\hline
+E \vdash
+\mbox{\reserved{fresh(}$T_1$\reserved{,}\dots\reserved{,}$T_n$\reserved{)}}:\{\reserved{Bool}\}
+\end{array}
+&
+\begin{array}{l}
+n > 0,\\
+\forall k (1 \leq k \leq n) \Rightarrow \tau_k \not= \emptyset
+\end{array}
+\\
+~\\
+\RULELAB{[trashed]} &
+\begin{array}{c}
+E \vdash SRL~\surd\\
+\hline
+E \vdash \mbox{\reserved{trashed(}SRL\reserved{)}}:\{\reserved{Bool}\}
+\end{array}
+\\
+~\\
+\RULELAB{[unchanged]} &
+\begin{array}{c}
+E \vdash SRL~\surd\\
+\hline
+E \vdash \mbox{\reserved{unchanged(}SRL\reserved{)}}:\{\reserved{Bool}\}
+\end{array}
+\\
+~\\
+\RULELAB{[thrown]} &
+\begin{array}{c}
+E \vdash S \reserved{ OK}, E \vdash SRL~\surd \\
+\hline
+E \vdash \mbox{\reserved{thrown(}}S\reserved{)}:\{S\}
+\end{array}
+\\
+~\\
+\RULELAB{[throws]} &
+\begin{array}{c}
+E \vdash S \reserved{ OK}\\
+\hline
+E \vdash \mbox{\reserved{throws(}}S\reserved{)}:\{\reserved{Bool}\}
+\end{array}
+\\
+~\\
+\RULELAB{[returns]} &
+E \vdash \reserved{returns}:\{\reserved{Bool}\}
+\\
+~\\
+%\RULELAB{[SRL5]} &
+%\begin{array}{c}
+%E \vdash SR:\tau \\
+%\hline
+%E \vdash SR~\surd
+%\end{array}
+%&
+%\begin{array}{l}
+%\end{array}
+%\\
+%~\\
+\RULELAB{[modifies]} &
+\begin{array}{c}
+E \vdash SRL~\surd \\
+\hline
+E \vdash \mbox{\reserved{modifies }} SRL: \surd
+\end{array}
+\\
+~\\
+\RULELAB{[constructs]} &
+\begin{array}{c}
+E \vdash \reserved{modifies}~ SRL~\surd \\
+\hline
+E \vdash \mbox{\reserved{constructs }} SRL: \surd
+\end{array}
+\end{array}
+\end{displaymath}
+\caption{Storage reference rules, part one}
+\label{ref-fig}
+\end{BFIGURE}
+
+\begin{BFIGURE}
+\begin{displaymath}
+\begin{array}{lll}
+\RULELAB{[SRL]} &
+\begin{array}{c}
+E \vdash SR_1~\surd,\dots,E\vdash SR_n~\surd\\
+\hline
+E \vdash SR_1,\dots,SR_n~\surd
+\end{array}
+&
+\mbox{if $n \geq 0$}
+\\
+~\\
+\RULELAB{[SRL2]} &
+\begin{array}{c}
+E \vdash \mbox{\reserved{nothing}}~\surd
+\end{array}
+\\
+~\\
+\RULELAB{[SRL3]} &
+\begin{array}{c}
+E \vdash \mbox{\reserved{everything}}~\surd
+\end{array}
+\\
+~\\
+\RULELAB{[SRL4]} &
+\begin{array}{c}
+E \vdash SR:\tau \\
+\hline
+E \vdash SR~\surd
+\end{array}
+&
+\begin{array}{l}
+\mbox{if \reserved{Set[TypeTaggedObject]}} \in \tau \mbox{ or } \\
+(\tau = \{S\} \mbox{ and}  \\
+S \not= \mbox{\reserved{Set[TypeTaggedObject]}} \mbox{ and} \\
+S \rightarrow \mbox{\reserved{Set[TypeTaggedObj]}} \\
+~~~~~~~~~\in E(\mbox{\reserved{contained\_objects}}))
+\end{array}
+\\
+~\\
+\end{array}
+\end{displaymath}
+\caption{Storage reference rules, part two}
+\label{ref-fig2}
+\end{BFIGURE}
+
+In Larch/C++ storage references are used in the \reserved{modifies}
+clause, and in a few other places. The storage reference rules
+illustrated in Figures~\ref{ref-fig} and~\ref{ref-fig2} show how these
+references interact with the sort system. Rule \RULELAB{[SRL4]} is the
+most complex of the rules. Its side condition states that a storage
+reference must either have the sort \reserved{Set[TypeTaggedObject]}
+or if it does not have this sort, there must be a operation
+\reserved{contained\_objects} within the type environment $E$ which
+has the signature \reserved{S -> Set[TypeTaggedObject]} associated
+with it, and the sort of the storage reference must be \reserved{S}. The
+constraints in the side condition are there because of the definition
+of storage references. For more information on the
+semantics of storage references, see the
+Reference Manual \cite[Section 6.2.3.3 and following]{Leavens96c}.
+
+\input{implementation}
+
+\section{Future Work}
+\label{futwork}
+In the future, steps need to be taken to improve the performance of
+the Larch/C++ Checker. One idea, raised when the memory problems were
+found in the LSL Checker, is the use of a cache to hold traits that
+have been processed previously. This ``symscache'' could then be
+checked to see if a trait had already had the \reserved{-syms} output
+created. It it had been created and is up-to-date, the Larch/C++
+checker could simply parse that file rather than calling the LSL
+Checker to regenerate the information. Problems that would need to be
+addressed include how to keep track of which traits are in the cache,
+how to keep track of how the traits have been renamed, and the policy
+for regenerating the information. Another major issue has to do with
+renaming. When items are renamed in a uses clause or other trait use,
+the output generated by the LSL Checker reflects that
+renaming. Somehow, the cache will need to be able to look at a file,
+tell how it was renamed, and see if that renaming is equivalent to the
+current use.
+
+Another area for future work is an examination of the structure of the
+Larch/C++ source code. Perhaps the application of design patterns
+could create a clearer, less cluttered design. One place where this
+could be applied is in the creation of an class based on the
+iterator pattern~\cite{Gamma-Helm-Johnson-Vlissides95} to
+handle the iteration of the sets of arrow sorts.
+
+Another place in the code that could stand a redesign is the
+\reserved{TmpFile} classes. The current system could be improved by
+rewriting the base \reserved{TmpFile} class so that it inherits from
+the class \reserved{fstream}. This implementation would require fewer
+classes, because the functionality of the \reserved{OutTmpFile} class
+could be moved into \reserved{TmpFile}. It also would allow the use of
+the C++ \reserved{putto} (\reserved{<<}) and \reserved{getfrom}
+(\reserved{>>}) operators on \reserved{TmpFile}s without the complex
+overloading that is required in the present implementation.
+
+\section{Conclusions}
+The goal of this project was to add the ability to sort check
+specifications to the Larch/C++ Checker. The current status of the
+project shows the the original goal is obtainable. This project has
+contributed the basic support needed within the Larch/C++ Checker, and
+the formalization of the Larch/C++ type system, that will allow for a
+sort checker to be added. The contributions are as follows:
+
+\begin{itemize}
+
+\item Creation of a formal and systematic statement describing the
+Larch/C++ type system.
+
+\item Development of an interface between the existing Larch/C++ Checker and
+the LSL Checker.
+
+\item Development of an automated system for translating C++
+declarations into equivalent LSL sorts.
+
+\item Support for the Evolving C++ Language Standard
+
+\end{itemize}
+
+This work, and the work to develop the sort checker itself, continue
+as this is written. It is my hope that the work I have done will make
+the future work of others easier.
+
+\section{Acknowledgments}
+\label{ack}
+This work was partially funded under NSF grant CCR-9503168.
+
+Many people assisted in the above work. Dr. Gary Leavens gave me the
+opportunity to work on this project and supported me every step of the
+way. My family was always there for me when I needed them.  Marybeth
+Gurski offered support and insight every step of the way. Professor
+John Hagge filled in at the last minute on my committee and offered
+outstanding criticism on this paper. Dr. Kelvin Nilsen offered moral
+support throughout my graduate career. The following people created
+the tools used in my project: Kurt Bischoff, Hans Boehm, et al.,
+previous members of the Larch/C++ project, and others who previously
+have worked with the Larch Shared Language and its associated
+languages. Finally, to any and all others who have been forgotten,
+thanks one and all.
+
+\bibliography{journal-abbrevs,mypaper}
+\end{document}
+

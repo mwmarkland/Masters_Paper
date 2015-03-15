@@ -1,0 +1,89 @@
+\setlength{\unitlength}{0.00083300in}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(6107,4534)(364,-4300)
+\thicklines
+\special{ps: gsave 0 0 0 setrgbcolor}\put(2932,-3954){\framebox(3145,3931){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(3456,-3692){\framebox(787,524){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(5029,-3692){\framebox(786,524){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(573,-2578){\framebox(1179,524){}}
+\special{ps: gsave 1 0 0 setrgbcolor}\put(4767,-1858){\framebox(1048,524){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(5553,-3168){\vector( 0, 1){1310}}
+\special{ps: grestore}\special{ps: gsave 0 0 0 setrgbcolor}\put(5553,-1334){\vector( 0, 1){263}}
+\special{ps: grestore}\special{ps: gsave 0 0 0 setrgbcolor}\put(5029,-1071){\vector( 0,-1){263}}
+\special{ps: grestore}\special{ps: gsave 0 0 0 setrgbcolor}\put(5029,-1858){\vector( 0,-1){262}}
+\special{ps: grestore}\special{ps: gsave 0 0 .69 setrgbcolor}\put(3980,-2906){\framebox(1311,786){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(5094,-2906){\vector( 0,-1){262}}
+\special{ps: grestore}\put(5815,-678){\vector( 1, 0){525}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(5815,-3299){\vector( 4, 3){524.640}}
+\special{ps: grestore}\special{ps: gsave 0 0 0 setrgbcolor}\put(5815,-3496){\vector( 1,-1){491.500}}
+\special{ps: grestore}\special{ps: gsave 0 0 0 setrgbcolor}\put(5815,-3430){\vector( 1, 0){525}}
+\special{ps: grestore}\special{ps: gsave 1 0 1 setrgbcolor}\put(4505,-1071){\framebox(1310,786){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(638,-1792){\framebox(1049,524){}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(1752,-2382){\line( 1, 0){656}}
+\put(2408,-2382){\line( 0,-1){1048}}
+\put(2408,-3430){\vector( 1, 0){1048}}
+\special{ps: grestore}\special{ps: gsave .56 0 .56 setrgbcolor}\put(4505,-3299){\vector( 1, 0){524}}
+\put(4505,-3299){\line( 0, 1){262}}
+\put(4505,-3037){\line(-1, 0){787}}
+\put(3718,-3037){\line( 0, 1){2097}}
+\put(3718,-940){\vector( 1, 0){787}}
+\special{ps: grestore}\special{ps: gsave .56 0 .56 setrgbcolor}\put(1687,-1530){\line( 1, 0){721}}
+\put(2408,-1530){\line( 0, 1){917}}
+\put(2408,-613){\vector( 1, 0){2097}}
+\special{ps: grestore}\special{ps: gsave 0 0 0 setrgbcolor}\put(4243,-3430){\vector(-1, 0){  0}}
+\put(4243,-3430){\vector( 1, 0){786}}
+\special{ps: grestore}\put(3001,-2986){\framebox(600,525){}}
+\put(3601,-2686){\vector(-1, 0){  0}}
+\put(3601,-2686){\vector( 1, 0){375}}
+\put(3226,-3286){\vector( 1, 0){225}}
+\put(3226,-3286){\vector( 0, 1){300}}
+\special{ps: gsave 0 0 0 setrgbcolor}\put(376,-3103){\framebox(1573,2097){}}
+\put(3226,-3286){\line( 0,-1){600}}
+\put(3226,-3886){\line( 1, 0){2175}}
+\put(5401,-3886){\vector( 0, 1){225}}
+\put(3076,-2686){\makebox(0,0)[lb]{\smash{\SetFigFont{9}{10.8}{sf}SymTab}}}
+\put(2997,108){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}lcppparse\special{ps: grestore}}}}
+\put(704,-2251){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}Larch/C++\special{ps: grestore}}}}
+\put(704,-2447){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}Statements\special{ps: grestore}}}}
+\put(4898,-1661){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 1 0 0 setrgbcolor}TmpFiles\special{ps: grestore}}}}
+\put(4046,-2316){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 .69 setrgbcolor}operation\special{ps: grestore}}}}
+\put(4046,-2513){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 .69 setrgbcolor}signature\special{ps: grestore}}}}
+\put(4046,-2709){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 .69 setrgbcolor}parser\special{ps: grestore}}}}
+\put(6405,-3365){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}syntax\special{ps: grestore}}}}
+\put(6405,-3561){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}errors\special{ps: grestore}}}}
+\put(6405,-744){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .82 0 0 setrgbcolor}errors\special{ps: grestore}}}}
+\put(6405,-2775){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .82 0 0 setrgbcolor}semantic\special{ps: grestore}}}}
+\put(6405,-2972){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .82 0 0 setrgbcolor}errors\special{ps: grestore}}}}
+\put(6471,-3889){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .82 0 0 setrgbcolor}trait\special{ps: grestore}}}}
+\put(6471,-4085){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .82 0 0 setrgbcolor}inclusion\special{ps: grestore}}}}
+\put(6471,-4282){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .82 0 0 setrgbcolor}errors\special{ps: grestore}}}}
+\put(4570,-744){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 1 0 1 setrgbcolor}LSL Checker\special{ps: grestore}}}}
+\put(376,-875){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{rm}\special{ps: gsave 0 0 0 setrgbcolor}Specification\special{ps: grestore}}}}
+\put(376,-678){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}Larch/C++\special{ps: grestore}}}}
+\put(704,-1596){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}LSL Traits\special{ps: grestore}}}}
+\put(5160,-3496){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}parser\special{ps: grestore}}}}
+\put(3822,-1389){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .56 0 .56 setrgbcolor}control\special{ps: grestore}}}}
+\put(3822,-1585){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave .56 0 .56 setrgbcolor}signals\special{ps: grestore}}}}
+\put(3653,-3496){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{sf}\special{ps: gsave 0 0 0 setrgbcolor}lexer\special{ps: grestore}}}}
+\end{picture}

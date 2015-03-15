@@ -1,0 +1,77 @@
+\setlength{\unitlength}{0.00083300in}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(4512,2724)(139,-2473)
+\thicklines
+\put(751,-2161){\makebox(6.6667,10.0000){\SetFigFont{10}{12}{rm}.}}
+\put(751,-2161){\vector( 1, 0){750}}
+\put(151,-1861){\framebox(1200,300){}}
+\put(226,-61){\framebox(1200,300){}}
+\put(676,-61){\line( 0,-1){300}}
+\put(676,-361){\makebox(6.6667,10.0000){\SetFigFont{10}{12}{rm}.}}
+\put(676,-361){\vector( 1, 0){825}}
+\put(2701,-661){\framebox(1575,600){}}
+\put(4126,-211){\vector( 1, 0){450}}
+\put(4126,-511){\vector( 1, 0){450}}
+\put(2701,-361){\line( 1, 0){1575}}
+\put(1501,-2461){\framebox(900,600){}}
+\put(1501,-2161){\line( 1, 0){900}}
+\put(2176,-2311){\vector( 1, 0){525}}
+\put(1501,-1561){\framebox(900,600){}}
+\put(1501,-1261){\line( 1, 0){900}}
+\put(2176,-1411){\vector( 1, 0){525}}
+\put(1501,-661){\framebox(900,600){}}
+\put(1501,-361){\line( 1, 0){900}}
+\put(2176,-511){\vector( 1, 0){525}}
+\put(2701,-1561){\framebox(1575,600){}}
+\put(4126,-1111){\vector( 1, 0){450}}
+\put(4126,-1411){\vector( 1, 0){450}}
+\put(2701,-1261){\line( 1, 0){1575}}
+\put(751,-1861){\line( 0,-1){300}}
+\put(2701,-2461){\framebox(1575,600){}}
+\put(4651,-2086){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}Symbols ...}}}
+\put(4126,-2011){\vector( 1, 0){450}}
+\put(4126,-2311){\vector( 1, 0){450}}
+\put(2701,-2161){\line( 1, 0){1575}}
+\put(2326,-2011){\vector( 0, 1){450}}
+\put(2326,-1111){\vector( 0, 1){450}}
+\put(151,-1786){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}currentSymTab}}}
+\put(301, 14){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}globalSymTab}}}
+\put(2776,-286){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}nonClassOrEnum}}}
+\put(2776,-586){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}classOrEnum}}}
+\put(4576,-286){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}Symbols ...}}}
+\put(4576,-586){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}Symbols ...}}}
+\put(1576,-2086){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}globals}}}
+\put(1576,-2386){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}locals}}}
+\put(1576,-1186){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}globals}}}
+\put(1576,-1486){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}locals}}}
+\put(1576,-286){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}globals}}}
+\put(1576,-586){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}locals}}}
+\put(2776,-1186){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}nonClassOrEnum}}}
+\put(2776,-1486){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}classOrEnum}}}
+\put(4651,-1186){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}Symbols ...}}}
+\put(4651,-1486){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}Symbols ...}}}
+\put(2776,-2086){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}nonClassOrEnum}}}
+\put(2776,-2386){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}classOrEnum}}}
+\put(4651,-2386){\makebox(0,0)[lb]{\smash{\SetFigFont{10}{12.0}{tt}Symbols ...}}}
+\end{picture}

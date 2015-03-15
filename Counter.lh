@@ -1,0 +1,41 @@
+// @(#)$Id: Counter.lh,v 1.9 1997/07/25 03:06:25 leavens Exp $
+// See J.P. Lejacq's paper in SIGPLAN 26(10), Oct, 1991
+
+//@ uses CounterTrait;
+
+class Counter {
+public:
+  //@ spec unsigned int value;
+  //@ invariant value\any <= Limit;
+  //@ constraint value\pre <= value\post;
+
+  Counter() throw();
+  //@ behavior {
+  //@   modifies value;
+  //@   ensures  value' = 0;
+  //@ }
+
+  virtual unsigned int value() const throw();
+  //@ behavior {
+  //@   ensures result = value\any;
+  //@ }
+
+  virtual void increment() throw();
+  //@ behavior {
+  //@   requires value^ < Limit;
+  //@   modifies value;
+  //@   ensures  value' = value^ + 1;
+  //@ }
+
+  virtual void reset() throw();
+  //@ behavior {
+  //@   modifies value;
+  //@   ensures  value' = 0;
+  //@ }
+};
+
+  ------------------------------------------------------------------------
+
+[Index]
+
+HTML generated using lcpp2html.

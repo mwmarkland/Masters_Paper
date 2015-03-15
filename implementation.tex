@@ -1,0 +1,1378 @@
+\section{Implementation of the System} 
+As mentioned in the
+Introduction, the development process for type checking in the
+Larch/C++ Checker has occurred in many pieces. This section of the
+paper begins with a short description of the Checker's source files
+and the tools used in development. Following that, the modifications to
+the Checker to support the C++ \reserved{namespace} construction are
+described. A description of the modifications to the Larch/C++ Checker
+and the LSL Checker to allow for the support of LSL constructs in
+Larch/C++ continues the section. Then a description of how
+the system converts C++ declarations to LSL sorts is given. The
+concluding section discusses the lookup algorithm and preliminary type
+checking results. Note that the source code presented in the following
+sections has been stripped of any comments or specifications in order to save
+space. Please refer to the actual implementation for more details.
+
+\subsection{Overview of the System}
+The task of creating tools for a language as complex as Larch/C++ is
+difficult. Any implementation of the tools will also be complex.
+Larch/C++'s implementation can be broken down into the following major pieces:
+\begin{itemize}
+
+\item The lexer and parser for Larch/C++
+\item The lexer and parser for LSL operation signatures
+\item The temporary file support system
+\item The LSL Checker
+\item The symbol table system
+
+\end{itemize}
+
+\noindent Note that the LSL Checker is included here because it required
+modification to work within the system, and because it is an important 
+part of the system as a whole.
+ 
+\begin{BFIGURE}
+\begin{center}
+\input{sysover2}
+\end{center}
+\caption{The structure of the Larch/C++ Checker}
+\label{sysover2}
+\end{BFIGURE}
+
+\noindent Figure~\ref{sysover2} shows a pictorial representation of the
+structure of the system.
+
+The majority of the Larch/C++ Checker's implementation lies within the
+lexer, the parser, and the support code. The lexer and parser are
+built using an attribute grammar system called Ox~\cite{Ox}. The
+Checker does not take full advantage of Ox, but the
+syntax for the creation and access of attributes for rules in Ox can
+be clearer than the equivalent expressions in \reserved{yacc}. Ox takes a
+decorated grammar as input and generates output in the form of
+\reserved{.l} and \reserved{.y} files to be sent through \reserved{lex} and
+\reserved{yacc}. 
+
+The support files for the lexer and parser include all of the code to
+generate the various data structures used within the Checker. The code
+has been developed using C++. Names of the source files and classes
+attempt to clearly state what they are used for. The file names can be
+confusing because they are limited to 8.3 format for compatibility
+with MS-DOS (Originally, MS-DOS allowed only filenames which had eight 
+characters followed by a three character extension). An example of how the files and classes are named is the
+case of type specifiers. Type specifiers are a part of the C++
+declaration syntax. The support code for type specifiers in the
+Larch/C++ Checker is contained in files named \reserved{TypeScfr.*}
+and the class implemented is actually named \reserved{TypeSpecifier}. It is
+important to note that some header files are broken into four
+pieces, the \reserved{.pre} file, the \reserved{.h} file, the
+\reserved{.pri} file, and the \reserved{.bse} file. Not all headers
+have all of these files, but most have at least the \reserved{.h} and
+\reserved{.pri}. The \reserved{.pre} file is used to hold any
+private declarations or \reserved{\#include} directives for the
+\reserved{.h} file that might occur before a class definition. The
+\reserved{.h} file contains the public portion of the class definition. The
+\reserved{.pri} file contains protected or private members. The
+\reserved{.bse} file is used for private or protected inheritance.
+
+The common code portion of the system contains code that is not
+specific to the Larch/C++ Checker. This includes implementations of
+dynamic strings, debugging code, interfaces to the environment, and
+other functions. These classes and functions are used throughout the
+whole of the system.
+
+Finally, not mentioned in the above list but still very important to
+the Larch/C++ Checker is the Boehm-Demers-Weiser Conservative Garbage
+Collector~\cite{Boehm-Weiser88}. All reclamation of allocated storage
+is handled by the garbage collector. This is important because the
+code makes heavy use of pointers and dynamic allocation of objects.
+
+\subsection{Support for C++ \reserved{namespace}}
+\label{namspcimp}
+The Draft C++ Standard~\cite{C++Apr95} contains definitions for many
+new language constructs. One of these is \reserved{namespace}. The
+\reserved{namespace} construct was added to C++ to allow for 
+an additional level of scoping for names. Before namespaces, the
+possibility existed for vendors to supply libraries of code that would
+have name conflicts. For example, vendor A ships a linked-list library
+with the operation \reserved{Delete}. It was possible that this
+\reserved{Delete} could name conflict with some other piece of
+code. The only solution was either to not use the library or to wrap
+the library in another class to isolate the name. Namespaces allow for
+declarations to be wrapped in another name without the need for
+additional classes. These wrapped names can then be made available via
+a \reserved{using} declaration.
+\begin{BFIGURE}
+\begin{verbatim}
+namespace foo{
+  int i;
+  int j;
+}
+
+void inc(){
+  using namespace foo;
+}
+
+void dec(){
+  using foo::i;
+}
+\end{verbatim}
+\caption{The C++ \reserved{namespace} construction}
+\label{namespcex}
+\end{BFIGURE}
+
+Figure~\ref{namespcex} shows an example of the use of
+the \reserved{namespace} construction.The \reserved{namespace} declaration creates a new \reserved{namespace} named
+\reserved{foo} which contains the declarations for \reserved{i} and
+\reserved{j}. These variables will not be visible at any scope level
+(see Section~\ref{cppts} for a review of the C++ scoping system)
+unless there is a \reserved{using} directive or a
+\reserved{using} declaration involving them. Within the function
+\reserved{inc()} there is an example of a \reserved{using}
+directive. The declaration 
+\begin{verbatim} 
+using namespace foo; 
+\end{verbatim}
+informs the system that all the declarations contained within
+\reserved{namespace foo} should become visible at the current
+scope. Similarly the \reserved{using} declaration: 
+\begin{verbatim} 
+uses foo::i;
+\end{verbatim} 
+informs the system that the declaration for \reserved{i} contained in
+\reserved{namespace foo} should be visible at the current
+scope. Another form of the \reserved{namespace} declaration, the
+\emph{unnamed namespace}, has a similar syntax, except a name is not
+supplied for the namespace. The semantics of unnamed namespaces
+are a little different, however. An unnamed \reserved{namespace} has the effect
+of declaring a namespace followed by an immediate \reserved{using}
+directive. Thus, the names become visible immediately.
+
+\begin{BFIGURE}
+\begin{center}
+\input{symtab}
+\end{center}
+\caption{The structure of the symbol table}
+\label{symtabstruct}
+\end{BFIGURE}
+
+Before describing the implementation of the support for the
+\reserved{namespace} construction 
+within the Larch/C++ Checker, some background on the symbol table
+system used within the Checker is needed. Figure~\ref{symtabstruct}
+illustrates the structure of the system's symbol table at some point.
+The basic structure of the symbol table is contained within the
+\reserved{class SymTab}. In this illustration, there are two pointers,
+\reserved{globalSymTab} and \reserved{currentSymTab}, which point to
+objects of type \reserved{SymTab}. \reserved{globalSymTab} always
+points to the top of the symbol table, while \reserved{currentSymTab}
+always points to the current local scope. Each \reserved{SymTab}
+object contains a link to its enclosing scope, \reserved{global}, and
+a link to the information in that table's current scope,
+\reserved{locals}. At the top level of the symbol table, the
+\reserved{globals} pointer is
+\reserved{NULL} to signify the top of the table. The local information
+in a \reserved{SymTab} is contained with a \reserved{Locale} object. A
+\reserved{Locale} contains references to two lists of \reserved{Symbols}, those
+that are classes or enumerations, \reserved{classOrEnum}, and those
+which are not, \reserved{nonClassOrEnum}. The \reserved{Symbol} class,
+and its derived classes, are used to represent and store the various
+types of C++ declarations. Please see Figure~\ref{symbolh} for the class
+hierarchy diagram for \reserved{Symbol} and its derived classes.
+
+\begin{BFIGURE}
+\begin{center}
+\include{classsym}
+\end{center}
+\caption{The \reserved{Symbol} class hierarchy}
+\label{symbolh}
+\end{BFIGURE}
+
+Modifying the Larch/C++ system to support the \reserved{namespace} and
+\reserved{using} constructs was not difficult. Within the Larch/C++
+checker, there was already support for the parsing of the
+\reserved{namespace} and \reserved{using} syntax. \reserved{Symbol}s of
+the form
+\reserved{OriginalNamespaceName} were created when a
+\reserved{namespace}  declaration was parsed. The
+\reserved{OriginalNamespaceName} object contains a local symbol table
+with a structure similar to the system's symbol table. The declarations
+within a namespace are placed within this local table so that they are
+available whenever the namespace object is referenced. Since this
+portion of the implementation was already complete, all that needed to
+be done was to implement the semantics of the using declarations and
+directives.
+
+At first, the best solution was thought to be that when a \reserved{using}
+directive or declaration was seen, simply copy the symbol for that
+declaration out of the namespace's local symbol table into the current
+symbol table for that scope. However, the question was raised, are the
+symbols we copy really like the other symbols within the table? The
+declarations introduced by \reserved{using} declarations and directives appear to
+be or are synonyms for the previous declarations. It was decided that
+the declarations introduced by the \reserved{using} forms should be
+differentiated from other forms of declarations. This was done because 
+\reserved{using} directives and declarations don't really create new declaration
+information, they simply change its visibility. Thus simply creating
+new regular declaration objects that were copies of the previous
+declaration objects would not suffice.
+
+Various solutions to this problem were proposed. One solution involved
+the creation of a new form of \reserved{Symbol}, the \reserved{Alias}
+which would have contained a reference back to the original symbol in
+the namespace symbol object. These \reserved{Alias} objects would have been
+placed into the scope containing the \reserved{using} form. While this
+solution had promise, it also added complexity. The actual declaration
+information would not have been easily accessible within the \reserved{Alias}
+object because it would have had to have been dereferenced in some manner.
+
+While the \reserved{Alias} object idea was rejected, the basic idea
+behind it, the idea of aliases, formed the cornerstone for the actual
+solution. The basic structure of the \reserved{Symbol} class and its
+derived classes was modified to support a new data member, the alias
+field. The \reserved{alias} field is a boolean value that stated whether this
+object was an alias or a simple symbol. Besides the data member,
+member functions for the observation and modification of this data
+member were created. The use of C++ and inheritance shined at this
+point. Only the code for the \reserved{Symbol} class had to be
+modified, with the change affecting the derived classes via
+inheritance. This solution also avoided the extra complexity of creating a
+new type of \reserved{Symbol} and the difficulty in getting at the declaration
+information. When a \reserved{using} statement was seen, all that needed to be
+done was create a copy of the symbols within the namespace
+object, flag these copies as aliases, and insert them into the symbol
+table.
+
+The code to create the alias copies and do the insertion into the
+symbol table ended up going through two revisions. The first
+implementation took a non object-oriented path to the
+solution. Remember that the \reserved{namespace} objects contained a
+symbol table with the same structure as the global symbol table
+described earlier. To create copies of the symbols, the system needed
+to be able to access them easily. The first implementation modified
+the
+\reserved{Locale} class, adding member functions that gave access to
+the protected data members. Once the system had the lists of
+\reserved{Symbol}s out of the \reserved{Locale}, it processed these
+Symbols one at a time via a large case statement. The case statement
+checked to see what kind of \reserved{Symbol} it was, created a copy
+of the symbol with the \reserved{alias} field set, and passed this
+copy back to the system to add to the current scope. While this
+solution worked, it seemed to void some of the advantages of
+object-oriented design. First, member functions should not pass
+private or protected data members to their callers. This breaks the
+property of encapsulation. Second, with the use of virtual functions,
+there should be no need for large case statements to differentiate
+between the type of symbols. Thus, the code was rewritten to be more
+object-oriented.
+
+The final implementation consists of the following. The \reserved{Symbol} class
+and its derived classes were modified to have member functions
+\reserved{CloneSym} and \reserved{CloneSymAsAlias}. A \reserved{Symbol}
+object receiving one of these method calls creates a copy of itself,
+setting the \reserved{alias} flag as necessary. The functions to allow
+for access to the data within the \reserved{Locale} objects and the
+\reserved{SymTab} objects were moved into member functions for those
+classes. This kept the encapsulation of the protected data members
+intact. Figure ~\ref{cpsymcpp} illustrates the
+\reserved{CopySymbols} functions and Figure ~\ref{usdlgram} shows
+their use in the Larch/C++ grammar file for the case of a
+\reserved{using} directive.
+\begin{BFIGURE}
+\begin{verbatim}
+
+void SymTab::CopySymbols(SymTab *Table, bool asAlias){ 
+    locals->CopySymbols(Table,asAlias);
+}
+
+void Locale::CopySymbols(SymTab *Table, bool asAlias){
+  Table->CopySymbols(asAlias,nonClassOrEnum);
+  Table->CopySymbols(asAlias,classOrEnum);
+}
+
+void SymTab::CopySymbols(bool asAlias, SymNodePtr SymList){
+ 
+  SymNodePtr currentSym;
+  Symbol *copySym;
+  currentSym = SymList;
+
+  while (currentSym != NULL) {
+    if (asAlias) {
+      copySym = Car(currentSym)->CloneSymAsAlias();
+    } else {
+      copySym = Car(currentSym)->CloneSym();
+    }
+    if ((this->Defined(Car(currentSym)->GetName()))) {
+      Warning(*(currentSym->value->GetName()) +
+              DyString(" is multiply defined in this scope\n")+
+              DyString("The new definition was ignored and not inserted"));
+    } else {
+      this->AddSym(copySym);
+    }
+    SymNodePtr currentSym2 = Cdr(currentSym);
+    currentSym = currentSym2;
+  }
+
+}
+\end{verbatim}
+\caption{The \reserved{CopySymbols} functions}
+\label{cpsymcpp}
+\end{BFIGURE}
+
+\begin{BFIGURE}
+\begin{verbatim}
+using_directive
+    : USING NAMESPACE complete_namespace_name T_SEMI
+        @{ @m using_directive.sym;
+           @using_directive.sym@ = @complete_namespace_name.sym@;
+           SymTab *LocalSyms = @using_directive.sym@->GetLocals();
+           /*
+             LocalSyms contains a SymTab that contains the
+             symbols that must be inserted.
+           */
+           LocalSyms->CopySymbols(currentSymTab,true);
+
+        @}
+\end{verbatim}
+\caption{One production for \reserved{using} directives}
+\label{usdlgram}
+\end{BFIGURE}
+The way the functions work for this example is as follows. Looking at
+Figure~\ref{usdlgram}, notice the comment. The \reserved{LocalSyms}
+variable contains the local symbol table associated with the
+namespace. The function \reserved{CopySymbols} is overloaded for
+\reserved{SymTab} objects. In this case the call
+\begin{verbatim}
+LocalSyms->CopySymbols(currentSymTab,true)
+\end{verbatim}
+ resolves to the first function in Figure~\ref{cpsymcpp}. The arguments
+to this function are the destination symbol table into which the
+copies will be placed, and a boolean value representing whether the
+copies should be aliases. This function then calls
+\reserved{Locale::CopySymbols} passing along the
+arguments. The \reserved{Locale::CopySymbols} passes the work onto the
+more complex of the two \reserved{SymTab::CopySymbols} functions to do
+the actual copying of the symbols and insertion within the symbol
+table. The insertions are done as follows. The first item is taken off
+of the list of symbols. The item is copied either as an alias or as a
+plain
+\reserved{Symbol} object depending on the value of the
+\reserved{asAlias} parameter. The 
+copy is then inserted into the symbol table referenced by the default
+parameter if it is not already there. The next Symbol to copy is taken
+off the list, and the process continues until all symbols have been
+copied.
+
+\subsection{Support for LSL Constructs}
+As its name suggests, Larch/C++ is dependent upon the Larch Shared
+Language. Specifiers use LSL traits to create the abstract models for
+their specifications. These models can then be referenced in Larch/C++
+in a number of ways: \reserved{uses} sequences, \reserved{expects}
+sequences, etc. The Larch/C++ Checker needs to be able to extract
+information about the operations defined within traits. The system
+must handle the overloading of trait operations and the renaming of
+sort parameters within traits. One possible solution was to write a
+filter for LSL traits that would extract the necessary
+information. This appeared to be a time sink, however. It was decided
+to see how other languages in the Larch family handled this interface.
+
+\subsubsection{Interface to the LSL Checker}
+\label{lslinterf}
+After examining an early implementation for the LCLint
+tool~\cite{lclint}, it was realized that the LSL Checker handles the
+renaming of traits in
+\reserved{includes} clauses, and will generate the needed information
+about the trait operations via the \reserved{-syms} option. Reusing
+this functionality would save time and effort. Thus, an interface to
+the LSL Checker was needed. The interface and its development occurred
+in a series of steps. First, the information within the Larch/C++
+specifications needed to be converted into a form useful to the LSL
+Checker. Then a system of passing this information to the LSL Checker
+and capturing the output was needed. Finally the information from the
+LSL Checker needed to be translated and stored in a form that the
+Larch/C++ Checker could later use.
+
+The first step, converting Larch/C++ \reserved{uses} clauses into useful LSL
+information, was a non-trivial task. For example, there needed to be a
+way to convert a \reserved{uses} clause like 
+\begin{verbatim}
+//@ uses SimpleSetTrait(Elem for E, Set<Elem> for C);
+\end{verbatim}
+into an equivalent LSL \reserved{includes} line. To do this, the
+Larch/C++ parser was modified to build strings of trait
+information. Two attributes were added to the parse tree nodes, a
+pointer to a
+\reserved{DyString} called \reserved{info} and a boolean called
+\reserved{TooComplex}. The \reserved{info} attribute points to the
+string that will eventually contain the trait and renaming information
+for the LSL \reserved{includes} line. The string is built as expected,
+bottom up, as the parse is conducted. The system handles template
+types, like the type \reserved{Set<int>} above, by translating the
+\reserved{<>} symbols into legal \reserved{[]} symbols. The system can
+do this because Larch/C++ requires that template types have equivalent
+sorts~\cite[Page 20]{Leavens96c}.However, C++ allows for complex
+expressions as template arguments. How should the system handle those?
+The answer is, it does not. The \reserved{TooComplex} attribute is
+used to keep track of the simplicity of the template arguments. If
+something that the system cannot handle, such as an expression
+\reserved{1 < 2}, appears as an argument, the \reserved{TooComplex}
+flag is set. This causes the Checker to generate a warning that the
+\reserved{uses} clause was too complex to translate into an LSL
+\reserved{includes} directive.
+
+Once the information in a \reserved{uses} clause has been translated,
+it needs to be passed to the LSL Checker. This requires some sort of
+interface between the Larch/C++ Checker and the LSL Checker. The
+interface used owes a lot of its basic design to the interface used by
+LCLint 1.4a~\cite{lclint}. The LCLint tool generates a temporary trait
+file that contains an \reserved{includes} statement for the trait
+information. It then uses the Standard C \reserved{system} call to run
+the LSL Checker over that file, redirecting the Checker's output into another
+temporary file. If \reserved{system} returns an error condition, then the LSL
+Checker is run again over the file to allow the error messages to be
+passed to the user.
+
+As in the LCLint tool, the Larch/C++ Checker takes the
+information generated from the \reserved{uses} clause (or other expressions
+involving traits) and creates a temporary trait. This trait consists
+of an
+\reserved{includes} statement that uses the generated traits. The LSL
+Checker is then run on this temporary trait to both check its syntax and to
+generate the \reserved{-syms} output. Once this basic interface 
+was sketched out, a few questions surfaced. How are the temporary
+files generated and managed? What is the best way to call the LSL
+Checker? Does the LSL Checker need to be run twice?
+
+Temporary file management was the first item to be addressed. It was
+known that there was a \reserved{tmpfile} function in Standard C that
+would generate a uniquely\-named temporary file. The problems with this method
+were that the file was always automatically deleted, and that the
+return value of the call was a \reserved{FILE *}. Since the system was
+implemented in C++, it was felt that the system should use streams as
+the interface rather than \reserved{FILE} pointers. The system should
+also have the ability to keep its temporary files around both for
+debugging purposes, and perhaps for caching purposes in the future
+(see Section ~\ref{futwork}). It was also necessary to design the
+implementation of temporary files in a way that would be more easily
+portable to other operating systems.
+
+The best solution to all of these issues was to design a temporary
+file class. The class would encapsulate the creation of the file names
+within its constructor, allowing us the ability to provide our own
+name or let the system choose one. It would also provide the ability
+to flag a file as undeleteable, so that it would not be reclaimed by
+the system. The destructor could check this flag, and delete the file
+as necessary. Figure~\ref{tmpfile} shows the header for the class
+\reserved{TmpFile} designed to meet these goals.
+
+\begin{BFIGURE}
+\begin{verbatim}
+#ifndef _TmpFile_h
+#define _TmpFile_h 1
+#include <fstream.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "DyString.h"
+#include "dirname.h"
+
+class TmpFile {
+
+public:
+  TmpFile();
+  TmpFile(char *extension);
+  virtual ~TmpFile();
+  virtual bool open();
+  virtual bool close();
+  virtual char *GetPath() const;
+  virtual char *GetFileName() const;
+  virtual char *GetCompletePath() const;
+  virtual bool IsDeleteable() const;
+  virtual void Deleteable(bool flag);
+  friend ostream& operator << (ostream& out, const TmpFile& tmp);
+  static void SetDefaultPath(char *def_dir);
+
+protected:
+  static DyString default_path;
+  DyString path;
+  DyString filename;
+  DyString extension;
+  DyString CompletePath;
+  bool deleteable;
+  fstream mystream;
+};
+#endif
+\end{verbatim}
+\caption{The \reserved{TmpFile} header}
+\label{tmpfile}
+\end{BFIGURE}
+\reserved{TmpFile}, which is part of the common code for the system, is an
+abstract class. Derived classes may be specialized to allow for
+different behaviors. In the Larch/C++ Checker, a derived class
+\reserved{OutTmpFile} generates temporary files for system outputs. The classes
+carry along their path information, which is based upon a default path
+stored in a static member variable. The value of this variable defaults to
+the current directory, but may be reset as needed. The \reserved{Deleteable}
+member function is used to change the deleteable flag on the file. If
+the deleteable flag is true, the file will be deleted when its
+destructor is called. The class currently allows for an extension to
+be added to the temporary file. This was added because LSL requires
+traits to reside in files with the extension
+\reserved{.lsl}.
+
+Once a system for generating temporary files was ready, it was time to
+design the method for calling the LSL Checker. All of the efforts
+surrounding the call are encapsulated within the \reserved{call\_lsl}
+function. Figures~\ref{calllsl1} and~\ref{calllsl2} show the source
+code for this function. The first half of the function
+(Figure~\ref{calllsl1}) sets up the temporary files that are needed. It creates
+two \reserved{OutTmpFile}s, \reserved{tmptrait} to hold the temporary trait information, and
+\reserved{symsout} to hold the output from the LSL Checker. The function checks
+to make sure that these files can be opened for writing. If not, it
+exits with an error. Once it has opened the files, it proceeds to
+create the temporary trait. Traits in LSL are required to have the
+trait name and the file name be the same. Thus the first thing
+\reserved{call\_lsl} does is get the file name from
+\reserved{tmptrait}. It takes the name provided by the
+\reserved{OutTmpFile} and the \reserved{includes} line 
+passed as an argument, and creates the temporary trait. For example,
+given the \reserved{uses} clause
+\begin{verbatim}
+//@ uses SimpleSetTrait(Elem for E, Set<Elem> for C);
+\end{verbatim}
+
+\reserved{call\_lsl} will be called with the \reserved{includes}
+parameter set to
+\begin{verbatim}
+SimpleSetTrait(Elem for E, Set[Elem] for C)
+\end{verbatim}
+and will generate a temporary trait similar to the following.
+\begin{verbatim}
+eaaa04712:trait
+includes SimpleSetTrait(Elem for E,Set[Elem] for C)
+\end{verbatim}
+
+\begin{BFIGURE}
+\begin{verbatim}
+#include <signal.h>
+#include <stdlib.h>
+#include "OutTmpFile.h"
+#include "LSLsup.h"
+#include "debug.h"
+#include "DGetEnv.h"
+#include "execit.h"
+
+extern int lslparse();
+extern bool LSL_keep_on_error;
+extern bool verbose;
+
+int call_lsl(DyString includes){
+  extern bool debug_flag;
+  int val,pid,status;
+  DyString sys_str;
+  
+  OutTmpFile tmptrait("lsl");
+  OutTmpFile symsout;
+  if(debug_flag){
+    tmptrait.Deleteable(false);
+    symsout.Deleteable(false);
+  }
+  if(!tmptrait.open()){
+    return(TMPFILE_ERR);
+  }
+   if(!symsout.open()){
+    return(TMPFILE_ERR);
+  }
+  tmptrait.write(tmptrait.GetFileName());
+  tmptrait.write(":trait\n");
+  tmptrait.write("includes ");
+  tmptrait.write(includes.ToCppString());
+  tmptrait.write("\n");
+  tmptrait.close();
+\end{verbatim}
+\caption{The \reserved{call\_lsl} function, part one}
+\label{calllsl1}
+\end{BFIGURE}
+
+The second part of \reserved{call\_lsl} handles the generation of the
+call to the LSL Checker and any resulting errors from that call; then it
+passes the results on to the next stage. \reserved{call\_lsl} uses 
+the environment variable \reserved{LSL\_EXE\_PATH} to locate the LSL
+Checker in the operating system. The use of an environment variable here was
+more flexible than either using a compilation macro to set the path,
+or simply choosing a path. The environment variable makes it easy for
+users to customize their installation of the tools. A call to the
+\reserved{system} function is built from the path to the LSL
+Checker and  the name of the temporary files. The macro variable
+\reserved{EXECIT} is used to prepend an \reserved{exec} to the front of the
+string on systems that support \reserved{exec}. This was done to improve the
+ability of the system to handle user interrupts. The first version of
+\reserved{call\_lsl} did not use \reserved{exec} and it had a tendency to not
+report errors or respond to user signals. For example, if a user hit
+Ctrl-C in the middle of checking, the system would return the user to
+the command prompt, but continue to execute. The abnormal behavior was
+traced to the shell invoked by the \reserved{system} call catching the signals
+that should have been passed upward. The addition of the \reserved{exec} to
+the command line passed to the \reserved{system} call allows for the messages
+to return back to \reserved{system} as expected. 
+
+After the actual \reserved{system} call, most of the remainder of
+\reserved{call\_lsl} handles error conditions that may be
+returned. The return value of \reserved{call\_lsl} is checked within
+the parser. If the system has been interrupted, this fact is passed up
+the call chain to the system driver, which halts the system. If the
+\reserved{system} call has executed correctly, the Larch/C++ Checker
+is ready to move on to parse the resulting \reserved{-syms} output.
+
+\begin{BFIGURE}
+\begin{verbatim}
+  if(verbose){
+    cerr << "Checking traits: " << includes.ToCppString() << endl;
+  }
+  DyString * lsl_exe = DGetEnv("LSL_EXE_PATH", new DyString("lsl"));
+  sys_str = DyString(EXECIT) + *lsl_exe + DyString(" -syms ") +
+            DyString(tmptrait.GetFileName());
+  sys_str = sys_str + DyString(" > ") + DyString(symsout.GetFileName());
+  val = system(sys_str.ToCppString());
+  if(val < 0){
+    return(SYSCALL_ERR);
+  }
+  if (WIFEXITED(val) && WEXITSTATUS(val) != 0) {
+    if (LSL_keep_on_error) {
+      tmptrait.Deleteable(false);
+    }
+    return(LSL_ERR);
+  }
+  if (WIFSIGNALED(val)) {
+    tmptrait.close();
+    return(WTERMSIG(val));
+  }
+  symsout.close();
+  tmptrait.close();
+  val = parse_lsl(symsout.GetFileName());
+  return(val);
+}
+\end{verbatim}
+\caption{The \reserved{call\_lsl} function, part two}
+\label{calllsl2}
+\end{BFIGURE}
+
+Once the basic interface was present in \reserved{call\_lsl}, and
+before the parser for the
+\reserved{-syms} output was written, the
+interface to the LSL Checker was tested. At first everything seemed to
+work fine. However, on very large traits the Larch/C++ checker consistently
+caused core dumps. After investigation, it was discovered that the LSL
+Checker had a large memory footprint that seemed to be causing the
+system to run out of memory. After consulting with the maintainers of
+the LSL Checker for ideas, the LSL Checker was modified to use the
+garbage collector also. This reduced its memory footprint to one-half
+the previous size, and allowed the Larch/C++ Checker to execute as
+expected. 
+
+Another discovery was that the LSL Checker did not follow
+the UNIX convention of sending output that reported errors to the
+\reserved{stderr} stream. This made clear why the implementors of the
+LCLint tool made two calls to the LSL Checker. Since the errors were
+reported on \reserved{stdout}, and they captured \reserved{stdout} to
+a file, the second execution was to allow for the errors to appear to
+the screen. Since modifications had already been made to support the
+garbage collector, the LSL Checker's output system was modified to
+support standard UNIX conventions. This allows the Larch/C++ checker
+to make a single system call and still get user messages output to
+the screen, and the \reserved{-syms} output to a file.
+
+\subsubsection{Data Structures for Sorts}
+Before one can parse and store the output from the LSL Checker, there
+must be data structures to store it in. The design of the data
+structures for sorts needed to embody the concept of sorts as they are
+used in LSL, while also being easy to build. The belief was that the
+sorts for C++ declarations might need to be built in pieces,
+bottom-up, as the parse occurred. This influenced the functionality of
+the design.
+
+Originally, the Larch/C++ Checker had one class, \reserved{LCPPSort},
+which was used to store sort information. It simply stored the
+\reserved{TypeSpecifier} and \reserved{Declarator} information for a
+declaration. The design of the new sort system began with the
+\reserved{LCPPSort} class so that it would be easy to plug into the
+existing tools.
+
+After examining documentation for LSL and a multitude of traits, a
+basic idea of what was needed to represent sorts was built. There are
+three types of sorts within LSL, atomic sorts, parameterized sorts,
+and arrow sorts. \emph{Atomic} sorts are the basic sort building
+blocks. An example would be the sort \reserved{int}. Atomic sorts take
+no arguments, and cannot be broken down into smaller
+pieces. 
+
+
+\emph{Parameterized} sorts are built by combining atomic sorts, or
+other parameterized sorts, into a more complex whole. An example would
+be the sort
+\reserved{Set[int]}, which consists of the two atomic sorts,
+\reserved{Set} and \reserved{int}. Even though most observed
+parameterized sorts only had one parameter, the decision was made to
+support the general case of an indeterminant number of parameters for a
+given sort.
+
+\emph{Arrow} sorts represent the signatures for LSL operators. An
+example would be \reserved{int , int -> int}. Arrow sorts consist of
+two pieces, an argument list which contains a list of atomic and
+parameterized sorts, and a result sort which is either a atomic or
+parameterized sort. Note that LSL does not support the concept of
+higher order operations; that is, arrow sorts cannot be used as either
+arguments or results. This fact simplifies the concrete implementation
+of these sorts.
+
+\begin{BFIGURE}
+\begin{center}
+\input{classes2}
+\end{center}
+\caption{Class hierarchy for \reserved{LCPPSort}: first design}
+\label{classfirst}
+\end{BFIGURE}
+
+Originally, the class hierarchy in Figure~\ref{classfirst} was
+proposed. Within this hierarchy, \reserved{LCPPSort} was viewed as an abstract
+class, allowing for basic behavior to be shared, and so that the
+implementation could use \reserved{LCPPSort} pointers to hold any type of
+sort. The class structure represents the feeling that atomic sorts are
+basic and parameterized sorts build upon them. The arrow sorts exist
+in their own tree, but contain both atomic and parameterized
+sorts. While this design captured the behavior of the various sorts
+well, it was uncertain whether it would be practical in practice. As
+mentioned earlier, it was believed that the sorts for a C++
+declaration might have to be built bottom-up. For example, the sort
+for a declaration \reserved{int i;} would first build an atomic sort
+\reserved{int}, later converting it to the parameterized sort
+\reserved{Obj[int]}. The question was raised whether a design for the
+classes could be found where these conversions would not have to
+happen. It was also noted that the list of parameters inside of a
+parameterized sort and the list of arguments within an arrow sort could be a
+mix of atomic and parameterized sorts. This could lead to 
+later headaches when trying to decide if two parameterized sorts were
+equal. The lack of homogeneity would make the task more complex.
+
+The realization that atomic sorts were equivalent to parameterized
+sorts with zero parameters simplified the class hierarchy for sorts to
+that shown in Figure~\ref{classfinal}. This hierarchy still supports
+the three forms of sorts, while not needing to be able to convert
+between atomic and parameterized sorts. With the new hierarchy a
+declaration \reserved{int i;} will first build a parameterized sort
+\reserved{int} which has no parameters. Later it would create the
+final sort \reserved{Obj[int]} by adding the \reserved{int} as a
+parameter to the \reserved{Obj} sort. The change in design also made
+lists of parameters in both parameterized and arrow sorts homogeneous.
+
+\begin{BFIGURE}
+\begin{center}
+\input{classes}
+\end{center}
+\caption{Class hierarchy for \reserved{LCPPSort}: final design}
+\label{classfinal}
+\end{BFIGURE}
+
+The final piece of the puzzle for representing sorts was how to
+support the overloading of LSL operators. Remember from earlier
+discussion (Section~\ref{lslts}) that LSL allows for a given operator
+name to have many different signatures associated with it. The choice
+of which signature to use is then made based upon the context of the
+use of the operator. The data structure needed to handle basic insertion,
+and insertion of duplicates easily. It would be convenient if it could
+handle retrieval based on different pieces of the arrow sort
+structure. The design chosen was an iterated set of arrow sorts. This
+data structure had the advantage of easily handling insertion,
+especially insertion of duplicates. Although the data structure itself
+does not handle retrieval of a given arrow sort by the parts of arrow
+sorts, i.e. by either parameter list or result sort, helper functions
+could provide that functionality.
+
+Figure~\ref{ArrowSet} shows the class \reserved{ArrowSet} used to
+implement the set of arrow sorts. The set is actually built on top of
+a singly linked list provided by the macros in the
+\reserved{SINGLYLL.h} file. The functionality is as expected for
+sets with the member functions modeling the usual mathematical
+behavior for sets. The member functions \reserved{Union},
+\reserved{Intersection}, and \reserved{Diff} generate their results
+within the default parameter, rather than generating a completely new
+set. For example, given sets \reserved{S1} and \reserved{S2}, the
+operation \reserved{S1.Union(S2)} will change \reserved{S1} to hold
+\reserved{S1} $\cup$ \reserved{S2}. This behavior, while documented in
+the specification for the class, can be somewhat confusing.
+
+\begin{BFIGURE}
+\begin{verbatim}
+#include "SINGLYLL.h"
+#include "ArrowSrt.h"
+typedef ArrowSort *ArrowSortPtr;
+DECLARE_SINGLYLL(ArrowSortPtr,ArrowSortNode)
+typedef ArrowSortNode *ArrowSortNodePtr;
+class ArrowSet{
+public:
+  ArrowSet();
+  ArrowSet(const ArrowSortPtr item);
+  ArrowSet(const ArrowSet& set);
+  bool In(const ArrowSortPtr item) const;
+  int Cardinality() const;
+  bool IsEmpty() const;
+  bool Subset(const ArrowSet& set) const;
+  bool Insert(const ArrowSortPtr item);
+  bool Remove(const ArrowSortPtr item);
+  void Union(const ArrowSet& set1);
+  void Intersection(const ArrowSet& set1);
+  void Diff(const ArrowSet& set1);
+  bool operator == (const ArrowSet& set1) const;
+  bool operator != (const ArrowSet& set1) const;
+  void Save_Iterate();
+  void Restore_Iterate();
+  void Reset_Iterate();
+  ArrowSortPtr Iterate();
+protected:
+  
+  ArrowSortNodePtr theSet;
+  ArrowSortNodePtr iteratePoint;
+  ArrowSortNodePtr old_iteratePoint;
+};
+ostream& operator << (ostream& out, ArrowSet item);
+\end{verbatim}
+\caption{The \reserved{ArrowSet} class}
+\label{ArrowSet}
+\end{BFIGURE}
+The major addition to the implementation of set shown here is the
+ability to iterate through the items in the set. Most sets allow you
+to look to see if an item is in a set. When dealing with sets of arrow
+sorts, however, the user might only know the result sort he is looking
+for. This means that there needs to be a way to examine each member in
+the set, allowing for comparisons with the individual parts of an
+arrow sort. Thus the iterator, and its controlling functions, were
+added. The \reserved{Reset\_Iterate} function clears any information
+about previous iterations and makes the set ready to iterate. The
+\reserved{Iterate} function returns the next member of the set in
+the iteration, or NULL if there are no elements remaining. The
+\reserved{Save\_Iterate} and \reserved{Store\_Iterate} member
+functions were added to help support the ability to print out the
+sets. The \reserved{operator <<} function was written using the
+\reserved{Iterate} function to output one member at a time. However,
+what if a user wanted to print out the set in the middle of an
+iteration without losing the iteration
+information. \reserved{Save\_Iterate} saves the current iteration
+point, which can be later restored via
+\reserved{Restore\_Iterate}. The use of all of the iteration
+functions is illustrated in the code for \reserved{operator <<} shown
+in Figure~\ref{oppto}.
+\begin{BFIGURE}
+\begin{verbatim}
+ostream& operator << (ostream& out, ArrowSet item){
+  
+  ArrowSortPtr val;
+  int iter;
+
+  iter = 0;
+  out << "{";
+  item.Save_Iterate();
+  item.Reset_Iterate();
+  val = item.Iterate();
+  while(val != NULL){
+    if (iter == 0){
+      val->Print(out);
+      iter++;
+    }
+    else {
+      cout << ",";
+      val->Print(out);
+    }
+    val = item.Iterate();
+  }
+  out << "}";
+  item.Restore_Iterate();
+}
+\end{verbatim}
+\caption{The \reserved{operator <<} function for \reserved{class
+  ArrowSet}}
+\label{oppto}
+\end{BFIGURE}
+
+\subsubsection{The Operator Signature Parser}
+Once the LSL Checker has been used to generate the \reserved{-syms}
+output, there needs to be a way of getting that information into the
+Larch/C++ Checker's symbol table. A tool was needed that would convert
+the \reserved{-syms} output into operator names and associated arrow
+sorts. The development of this portion of the system again looked to
+the previous work of LCLint for an idea of how to proceed. The LCLint
+tool used a hand-crafted lexer, combined with a \reserved{yacc}-based
+parser to generate data structures from the
+\reserved{-syms} data. A close examination revealed that the
+hand-crafted lexer was too complex to be easily converted for use
+within the Larch/C++ Checker. This led to the development of a
+\reserved{flex}-based lexer for this input. Starting from the token
+definitions in LCLint's signature file and the information in the LSL
+technical report \cite{Guttag-Horning-Modet90}, a set of regular
+expressions was developed to represent the tokens. The major
+difficulty here was that some characters had multiple meanings
+depending upon context. For example, the signature
+\begin{verbatim}
+[ __ , __ ] : int , int -> Tuple[int]
+\end{verbatim} 
+represents a function named \reserved{[]} which takes two
+\reserved{int} arguments and constructs a \reserved{Tuple[int]}. At
+first glance this does not seem difficult to break into
+tokens. However, the square brackets that form the name of the
+function are actually the tokens \reserved{OPENSYM} and
+\reserved{CLOSESYM}, while the square brackets in the sort
+\reserved{Tuple[int]} are the tokens \reserved{LBRACKET} and \reserved{RBRACKET}. How should
+the system be designed to return the correct tokens? The solution was
+to create a lexer with start states to allow for the differentiation
+of the uses for square brackets. \emph{Start states} allow \reserved{flex} to use
+different matching rules based upon what has been seen in the
+input. In this case, the switching of states in the lexer is based
+upon having seen either a colon or a new-line character. The lexer
+knows that when it has seen a colon, it is within the signature for
+the operation. Thus the lexer always returns \reserved{LBRACKET} and
+\reserved{RBRACKET} in 
+this case. When the lexer reaches a new-line character, it knows that
+it has reached the end of a complete signature. At this point it
+switches to a start state where square brackets are \reserved{OPENSYM}s and
+\reserved{CLOSESYM}s. Please see
+\cite{Levine-Mason-Brown92} for more details on the use of start states.
+
+The initial testing of the operator signature parser revealed a minor
+problem. The system was consistently returning parse errors for input
+that looked correct. The problem turned out to be that the LSL Checker
+automatically broke long lines by inserting a
+new-line character and continuing the output on the next line. This
+was done to allow for users to easily read long lines that appeared on
+their screens. However, the insertion of the new-line character was
+causing the lexer for the signatures to switch states prematurely,
+leading to the parse errors. There were a number of possible
+solutions. One possibility was to change the lexer to use a different
+set of start states. While this was probably possible, the lexer as
+it existed was relatively simple to understand. If the lexer was to be
+modified, it would probably become more complex and difficult to
+understand. The other solutions were all based upon modifying the LSL
+Checker to change its output format. Any change to the output,
+however, had to preserve the output format used by the Larch Prover,
+and should continue to make the messages readable to the user. Since
+all output in the LSL Checker passed through the same output
+functions, some sort of conditional check was needed to turn on and
+off the output of the offending new-line. An additional boolean
+variable, \reserved{PrintingSyms} was added to the system to flag when
+the \reserved{-syms} output was being printed. If the flag is true,
+then no new-lines are inserted into the output. This allows the parser
+to work as expected.
+
+The final piece of the operator signature parser is the interface to
+the Larch/C++ symbol table. This involved the creation of a new type
+of \reserved{Symbol} to hold the operator's information and a
+modification to the \reserved{Locale} portion of the symbol
+table. New classes \reserved{TraitOp} and
+\reserved{ExtendedTraitOp} were derived from the \reserved{Symbol}
+base class. Basically \reserved{TraitOp} objects look
+like all other \reserved{Symbol}s, especially \reserved{Ident}s, except for the
+fact that their sort information is an 
+\reserved{ArrowSet} not a simple \reserved{LCPPSort}. \reserved{ExtendedTraitOp}
+is derived from \reserved{TraitOp} and has an extra name field that is
+used in reporting errors. For example, the signature \reserved{if \_\_
+then \_\_ else \_\_: Bool, Bool, Bool -> Bool} creates an
+\reserved{ExtendedTraitOp}. The name used to index the function in the
+symbol table is \reserved{ifthenelse}, while the name reported for
+errors is \reserved{if \_\_ then \_\_ else \_\_}. Other signatures, such as
+\reserved{f: int -> float}, generate \reserved{TraitOps} because the
+name reported for errors is the same as the name used to index the
+operation in the symbol table. 
+
+The parser creates a local symbol table into which it places
+\reserved{TraitOp} and \reserved{ExtendedTraitOp} symbols as it parses
+the signatures. It is at this point where the system does the name
+conflict resolution described in Section~\ref{lcppts}. If the
+parser-generated symbol has a name that already exists in the 
+\reserved{currentSymTab}, the trait operation is discarded, and a
+warning is reported to the user. Similarly, if the system is inserting a C++
+identifier into the symbol table and discovers an existing trait operation
+with the same name, it discards the trait operation and warns the user.
+
+The other major modifications to the symbol table involved adding an
+additional field to the \reserved{Locale} class, with its associated
+member functions, and the modification of the \reserved{SymTab} class
+to allow for copying of the new fields. Figure~\ref{symtabstruct}
+shows the old structure of the symbol table. \reserved{Locale}s
+contained two namespaces, \reserved{nonClassOrEnum} and
+\reserved{classOrEnum}. This form was modified to add a third field,
+\reserved{TraitOps}, to hold lists of the trait operations. This was
+needed to support the split of the symbol table into separate C++ and
+LSL operator ``worlds'', as described in Section~\ref{lcppts}. The
+addition of this field required the creation of supporting functions
+that operated upon this new field. The new functions are simply copies
+of the existing \reserved{Locale} functions which operate upon this
+new field. All operations on the new field were kept separate to make
+sure that the existing behavior of the Larch/C++ Checker did not
+change. Of these new functions, the only one examined in detail here
+is the new \reserved{CopyTraitOps} series of functions within
+\reserved{Locale} and
+\reserved{SymTab}. These functions are basically clones of the
+\reserved{CopySymbols} functions described in Section~\ref{namspcimp} modified
+to work with the new \reserved{TraitOps} field in the
+\reserved{Locale} class. These functions are used to copy the local
+symbol table created by the LSL operator signature parser into the
+Larch/C++ Checker's main symbol table. Please see the implementation
+for further details on all of the new functions.
+
+The operator signature parser is used for more than support for
+\reserved{uses} clauses within specifications. It is also used to load
+all of the built-in traits, such as the traits for the basic C++
+types, in the initialization of the Larch/C++ Checker. This
+information is stored at the top level of the symbol table, outside of
+any C++ scope so that it will not be removed by the name conflict
+resolution system.
+
+\subsubsection{Conversion of C++ declarations to LSL sorts}
+
+The final major piece of support required for sort checking within the
+Larch/C++ Checker is the ability to convert C++ declarations into
+their equivalent sorts. Recall from the discussion of the rules for
+state functions, Section~\ref{staterules}, that C++ declarations
+consist of an abstract value wrapped within an object. This
+interaction between the sorts of the abstract values and the sorts of
+the enclosing objects can make it difficult to automatically generate
+sorts. Examples of declarations and their equivalent sorts taken from
+the Reference Manual ~\cite[Chapter 5 and Section 6.1.8.1]{Leavens96c}
+are illustrated in Figures~\ref{globalsorts} and
+~\ref{formalsorts}. Notice that the same form of declaration may have
+a different sort depending upon whether it is a declaration of a
+variable or a declaration of a formal parameter. Notice also the
+complexities surrounding the sorts for
+\reserved{struct}, \reserved{union}, and \reserved{class} types. These
+special cases make the code for the translation more complex.
+
+
+\begin{BFIGURE}
+\begin{verbatim}
+Declaration             Sort of x (used as global)
+-------------           --------------------------
+const int &const x;     ConstObj[int]
+const int *const x;     ConstObj[Ptr[ConstObj[int]]]
+const int x[3][4];      Arr[Arr[ConstObj[int]]]
+int *x[10];             Arr[Obj[Ptr[Obj[int]]]]
+struct IntList {
+  int val;
+  IntList *next;
+  };
+IntList x;              ConstObj[IntList]
+const IntList x;        ConstObj[Const[IntList]]
+int (*x)(int i);        Obj[Ptr[ConstObj[cpp_function]]]
+int (* const x)(int i); ConstObj[Ptr[ConstObj[cpp_function]]]
+int (*x[10])(int i);    Arr[Obj[Ptr[ConstObj[cpp_function]]]]
+\end{verbatim}
+\caption{Sorts for global C++ declarations}
+\label{globalsorts}
+\end{BFIGURE}
+
+\begin{BFIGURE}
+\begin{verbatim}
+Declaration      VarId   Its Sort (when used as a formal parameter)
+-------------    -----   -----------------------------------------
+int i            i       int
+int & ir         ir      Obj[int]
+int * ip         ip      Ptr[Obj[int]]
+int ai[]         ai      Ptr[Obj[int]]
+struct IPair {
+  int fst, snd;
+  };
+Ipair sip;       sip     Val[IPair]
+union FI {
+  float f;
+  int i;
+  };
+FI fi;           fi      Val[FI]
+\end{verbatim}
+\caption{Sorts for formal parameter declarations}
+\label{formalsorts}
+\end{BFIGURE}
+
+At first, the thought was that sort information would have to be
+gathered and passed as attributes throughout the parse tree. However,
+this method was discarded once the realization occurred that the
+parser was already gathering the information necessary for building
+sorts within the \reserved{TypeSpecifier} and \reserved{Declarator} objects. In Larch/C++,
+as in C++, type specifiers contain a type name and an associated
+qualifier (either \reserved{const} or \reserved{volatile}). \reserved{int},
+\reserved{unsigned int}, \reserved{enum color}, and \reserved{const
+int}, are all examples of valid type
+specifiers~\cite{Leavens96c}. Declarators contain the names of the
+items being declared along with a list of qualifiers that provide
+additional information. Figure~\ref{declquals} lists the qualifiers as
+presented in the Larch/C++ Reference Manual \cite{Leavens96c}.
+\begin{BFIGURE}
+\begin{verbatim}
+  Operator     Meaning
+  ---------    -----------------
+   *            Pointer
+   ::*          Pointer to Member
+   &            Reference
+   []           Array
+   ()           Function
+\end{verbatim}
+\caption{Declarator qualifiers}
+\label{declquals}
+\end{BFIGURE}
+
+
+After it was realized that the type specifier and declarator
+information was enough to build sorts, the question became, at what
+point during a parse is this information complete and available? It
+turns out that the key was within the function
+\reserved{Declare}. \reserved{Declare} is used to add declarations
+to the current symbol table. It was clear at this point that all of
+the information required would be available. In examining
+the \reserved{Declare} function, it was noted that at certain points
+it made calls to the \reserved{LCPPSort} constructor. It was decided that
+this would be the best place to generate sorts. 
+
+\begin{BFIGURE}
+\begin{verbatim}
+ParamSort *BuildSort(const TypeScfr *typescfr, 
+                    DQNode *dqlist, bool IsMember){
+
+  ParamSort *typescfrsort, *result;
+  ParamSort *tmp1, *tmp2, *tmp3;
+  DQNode *currlist, *revlist;
+
+  if(typescfr == NULL){
+    result = NULL;
+  } else {
+    if(typescfr->isConst){
+      tmp1 = new ParamSort(DyString("ConstObj"),NULL);
+    }
+    else {
+      tmp1 = new ParamSort(DyString("Obj"),NULL);
+    }
+    
+    if((typescfr->sym->GetKeywordKind()) 
+           == TypedefNonClassOrEnumNameTag){
+      tmp1 = (ParamSort *)typescfr->sym->GetLCPPSort();
+    } else {
+      tmp2 = new ParamSort(*(typescfr->sym->GetName()),NULL);
+      tmp1->AddParam(tmp2);
+    }
+
+    typescfrsort = tmp1;
+    result = typescfrsort;
+  }
+\end{verbatim}
+\caption{Function \reserved{BuildSort}, part one}
+\label{buildsrtone}
+\end{BFIGURE}
+Once the location was known, a function needed to be developed to
+convert the type specifier and declarator information into the correct
+sorts. A preliminary version of this function for global declarations,
+called \reserved{BuildSort}, which does not handle classes,
+unions, or structs, is pictured in Figures~\ref{buildsrtone} and
+~\ref{buildsrttwo}. The portion of the function in
+Figure~\ref{buildsrtone} handles the translation of the type specifier
+information into an equivalent sort. It first checks to see if a
+\reserved{const} specifier is associated with the declaration. If one
+is, it creates a parameterized sort \reserved{ConstObj}; otherwise it
+creates the sort \reserved{Obj}. Next it examines the \reserved{Symbol}
+associated with this type specifier. The Symbol carries the name of
+the type or \reserved{typedef}, for which this specifier was
+created. If you examine the class hierarchy for \reserved{Symbol} in
+Figure~\ref{symbolh}, you will see that one form of identifier is
+\reserved{BuiltInTypeName}. Many declarations carry \reserved{Symbol}s of this
+sort whose name fields are the built in types. If the \reserved{Symbol} is not a
+\reserved{typedef}, the function takes the name from the \reserved{Symbol},
+creates a parameterized sort from the name, and then uses that name as
+a parameter to the sort created from the \reserved{const}
+specifier. If the \reserved{Symbol} associated with this type specifier is a
+\reserved{typedef}, it looks inside that symbol to find the correct
+sort to use as a parameter to the previously created sort. For
+example, this algorithm works as follows on a declaration of the form
+\reserved{int i;}.
+\begin{itemize}
+\item It creates a sort \reserved{Obj} because there is no
+\reserved{const} associated with the declaration.
+\item Since the symbol carried along with the \reserved{TypeSpecifier}
+is a \\
+\reserved{BuiltInTypeName}, the system creates another sort
+\reserved{int}.
+\item The system uses the second sort as a parameter to the first,
+creating the correct sort \reserved{Obj[int]}.
+\end{itemize}
+
+It is important to note that this portion of the system is dependent
+upon the system creating the correct type names for
+\reserved{BuiltInTypeName} \reserved{Symbol}s. When preliminary testing began, it
+was discovered that type specifiers such as {unsigned int} did not
+create the correct names. Functionality was added to the function
+\reserved{TypeScfr::Combine} to generate these names correctly. 
+
+\begin{BFIGURE}
+\small
+\begin{verbatim}
+  currlist = dqlist;
+  while(currlist != NULL) {
+    DeclQual *tmp = Car(currlist);
+    if(tmp->IsPointer()){
+      if(tmp->IsConst()){
+        tmp1 = new ParamSort(DyString("ConstObj"),NULL);
+      }
+      else {
+        tmp1 = new ParamSort(DyString("Obj"),NULL);
+      }
+      tmp2 = new ParamSort(DyString("Ptr"),NULL);
+      tmp2->AddParam(result);
+      tmp1->AddParam(tmp2);
+      result = tmp1;
+    }
+    else if (tmp->IsArray()){
+      tmp1 = new ParamSort(DyString("Arr"),NULL);
+      tmp1->AddParam(result);
+      result = tmp1;
+    }
+    else if (tmp->IsFunction()){
+      tmp1 = new ParamSort(DyString("ConstObj"),NULL);
+      if (IsMember){
+        tmp2 = new ParamSort(DyString("cpp_member_function"),NULL);
+      } else {
+        tmp2 = new ParamSort(DyString("cpp_function"),NULL);
+      }
+      tmp1->AddParam(tmp2);
+      result = tmp1;
+    }
+    else {
+    }
+    currlist = Cdr(currlist);
+  }
+  return(result);
+}
+\end{verbatim}
+\normalsize
+\caption{Function \reserved{BuildSort}, part two}
+\label{buildsrttwo}
+\end{BFIGURE}
+
+The second half of \reserved{BuildSort} handles any associated
+declaration qualifiers. These are handled by building up a sort in
+pieces. The individual pieces are not semantically complete sorts, but 
+when it finishes, it will have generated a complete sort. \reserved{BuildSort} starts out by checking to see if a pointer,
+\reserved{*} has been seen. Declaration qualifiers carry
+information about whether they have been modified with a
+\reserved{const} keyword also. If the declaration qualifier is a pointer, the system
+generates one of the following incomplete sorts, either \reserved{ConstObj[Ptr]} or \reserved{Obj[Ptr]} from
+the pointer qualifier depending upon the \reserved{const}ness of the
+pointer. Then the sort created from the type
+specifier is added to the incomplete sort as a parameter, yielding a
+complete sort. As an example,
+look what happens to the declaration \reserved{int * const i;}:
+\begin{itemize}
+\item The type specifier builds a sort \reserved{Obj[int]} as described
+above.
+\item The first declaration qualifier is a pointer. The system checks
+to see if it is modified by a \reserved{const} keyword. Since it is,
+it generates the incomplete sort \reserved{ConstObj[Ptr]}.
+\item The system combines the sort from the type specifier and the
+declaration qualifier to get the final sort \reserved{ConstObj[Ptr[Obj[int]]]}.
+\end{itemize}
+
+The other declaration qualifiers work in a similar way, building the
+correct sorts for themselves based upon the definitions in the
+Reference Manual~\cite{Leavens96c}. As the algorithm cycles through
+the list of qualifiers, it builds the sort from the inside out.
+
+Once the basic declaration qualifier code was built, another
+abnormality was discovered in testing. Member functions which were
+referenced outside of the actual class declaration were not given the
+sort \reserved{cpp\_member\_function} as they should have been. The
+class \reserved{Point} in Figure~\ref{Pointlcc} is a specification
+that illustrates this problem.
+\begin{BFIGURE}
+\begin{verbatim}
+class Point {
+public:
+  uses informally "pairs of [x,y] values";
+  Point();
+  int x_val() const;
+  int y_val() const;
+  void set_x(int xv);
+  void set_y(int yv);
+};
+extern Point::Point();
+behavior {
+  constructs self;
+  ensures self\post = [0,0];
+}
+extern int Point::x_val() const;
+behavior {
+  ensures result = self\any.x;
+}
+extern int Point::y_val() const;
+behavior {
+  ensures result = self\any.y;
+}
+extern void Point::set_x(int xv);
+behavior {
+  modifies self;
+  ensures self\post.x = xv /\ (self\pre).y = (self\post).y;
+}
+extern void Point::set_y(int yv);
+behavior {
+  modifies self;
+  ensures self\post.y = yv /\ (self\pre).x = (self\post).x;
+}
+\end{verbatim}
+\caption{The Point.lcc specification}
+\label{Pointlcc}
+\end{BFIGURE}
+
+This specification attempts to redeclare the functions outside of the
+class declaration. When this happened, the system had no way of
+knowing that the functions were actually member functions and that their sorts
+were redeclared as \reserved{cpp\_function}. To solve this problem,
+the \reserved{Declare} function was modified to check the \reserved{Symbol} it
+was declaring to see if it already has a sort. If it does,
+\reserved{Declare} keeps that type and does not create a new one. The
+code for this is illustrated in Figure~\ref{declarecode}
+
+\begin{BFIGURE}
+\begin{verbatim}
+if (sym->GetKeywordKind() == OriginalClassNameTag
+    || sym->GetKeywordKind() == TemplateClassNameTag) {
+  // it's a constructor
+  Symbol *ctorSym = new Ident(sym->GetName(), DD_Declared);
+  ctorSym->SetLCPPSort(BuildSort(
+                currentTypeScfr, dcltor->dcl_quals,IsMember));
+  sym->AddCtor(ctorSym);
+} else {
+  if(sym->GetLCPPSort() == NULL){
+    sym->SetLCPPSort(BuildSort(
+               currentTypeScfr, dcltor->dcl_quals,IsMember));
+  }
+  illFormed = AddCheckingDeclarable(currentSymTab, sym) || illFormed;
+}
+\end{verbatim}
+\caption{Code from \reserved{Declare} checking for previous sort}
+\label{declarecode}
+\end{BFIGURE} 
+The code that performs the check
+\begin{verbatim}
+sym->GetLCPPSort() == NULL
+\end{verbatim}
+is making sure that the \reserved{Symbol}'s sort pointer has not
+been assigned to previously. If this is the case, the system builds a
+sort for the \reserved{Symbol} \reserved{sym}.
+
+As mentioned earlier, formal parameters may have sorts that differ from
+similar global declarations. A function \reserved{BuildArgSort} which
+works in a similar manner as \reserved{BuildSort} handles the
+different formulations.
+
+\subsubsection{Additional Work}
+
+To complete the development of the sort checking system for the
+Larch/C++ Checker, additional work needs to be done. The lookup
+algorithm described in Section~\ref{lcppts} needs to be implemented
+and tested. Also, the support functions for dealing with the
+\reserved{ArrowSet} objects need to be defined and
+implemented. Finally, the main grammar file needs to be modified to
+actually perform the sort checking. It is expected that work will
+continue on this portion of the project in the future.
+
+

@@ -1,0 +1,97 @@
+\setlength{\unitlength}{0.00083300in}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(6500,5499)(364,-6823)
+\put(5116,-1603){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}TemplateClassName}}}
+\thicklines
+\put(3151,-1561){\makebox(6.6667,10.0000){\SetFigFont{10}{12}{rm}.}}
+\multiput(2446,-4541)(6.04545,-6.04545){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(2579,-4674){\line( 0, 1){267}}
+\multiput(2579,-4407)(-6.06818,-6.06818){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(1644,-4741){\framebox(802,467){}}
+\put(1644,-3940){\framebox(1403,467){}}
+\put(1644,-3139){\framebox(1937,468){}}
+\put(376,-3873){\framebox(801,534){}}
+\put(2646,-6611){\line( 1, 0){334}}
+\put(2980,-6811){\framebox(1535,467){}}
+\multiput(2512,-6611)(6.06818,-6.06818){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(2646,-6744){\line( 0, 1){267}}
+\multiput(2646,-6477)(-6.09091,-6.09091){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(2512,-6611){\line( 0, 1){  0}}
+\put(1644,-6811){\framebox(868,467){}}
+\put(1644,-2271){\framebox(1069,735){}}
+\multiput(2713,-1937)(6.04545,-6.04545){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(2846,-2070){\line( 0, 1){267}}
+\multiput(2846,-1803)(-6.06818,-6.06818){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(2713,-1937){\line( 0, 1){  0}}
+\put(2980,-1803){\framebox(1736,467){}}
+\put(2980,-2404){\framebox(1802,400){}}
+\multiput(4716,-1603)(6.06818,-6.06818){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(4849,-1737){\line( 0, 1){267}}
+\multiput(4849,-1470)(-6.04545,-6.04545){23}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(4716,-1603){\line( 0, 1){  0}}
+\put(4849,-1603){\line( 1, 0){200}}
+\put(3314,-4341){\line( 0,-1){1535}}
+\put(3314,-5876){\line( 1, 0){534}}
+\put(3314,-5075){\line( 1, 0){534}}
+\put(3848,-6143){\framebox(1535,534){}}
+\put(3848,-5342){\framebox(1602,534){}}
+\put(3848,-3740){\framebox(1535,534){}}
+\put(2579,-4541){\line( 1, 0){735}}
+\put(3314,-3473){\line( 1, 0){534}}
+\put(5049,-1803){\framebox(1803,467){}}
+\put(3581,-4541){\framebox(2470,534){}}
+\put(3647,-4341){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}TypedefNonClassOrEnumName}}}
+\put(3314,-4274){\line( 1, 0){267}}
+\put(3301,-4411){\line( 0, 1){975}}
+\multiput(1201,-3586)(6.00000,-6.00000){26}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(1351,-3736){\line( 0, 1){300}}
+\multiput(1351,-3436)(-6.00000,-6.00000){26}{\makebox(6.6667,10.0000){\SetFigFont{7}{8.4}{rm}.}}
+\put(1201,-3586){\line( 0, 1){  0}}
+\put(1351,-3436){\line( 0, 1){1575}}
+\put(1351,-1861){\line( 1, 0){300}}
+\put(1351,-3736){\line( 0,-1){825}}
+\put(1351,-4561){\line( 1, 0){300}}
+\put(1351,-2911){\line( 1, 0){300}}
+\put(1351,-3736){\line( 1, 0){300}}
+\put(2851,-1786){\line( 0, 1){225}}
+\put(2851,-1561){\line( 1, 0){150}}
+\put(2851,-2086){\line( 0,-1){150}}
+\put(2851,-2236){\line( 1, 0){150}}
+\put(1351,-4561){\line( 0,-1){2100}}
+\put(1351,-6661){\line( 1, 0){300}}
+\put(1845,-4541){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}Ident}}}
+\put(1644,-3740){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}OriginalEnumName}}}
+\put(1711,-2938){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}TemplateNonClassName}}}
+\put(443,-3673){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}Symbol}}}
+\put(1711,-6677){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}TraitOp}}}
+\put(3113,-6611){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}ExtendedTraitOp}}}
+\put(1711,-1803){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}Original}}}
+\put(1711,-2004){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}Namespace}}}
+\put(1711,-2204){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}Name}}}
+\put(3113,-1603){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}OriginalClassName}}}
+\put(3047,-2271){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}NamespaceAliasName}}}
+\put(4048,-5943){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}BuiltInTypeName}}}
+\put(3914,-5142){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}TypedefEnumName}}}
+\put(3914,-3539){\makebox(0,0)[lb]{\smash{\SetFigFont{11}{13.2}{sf}TypedefClassName}}}
+\end{picture}

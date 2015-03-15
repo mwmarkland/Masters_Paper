@@ -1,0 +1,76 @@
+\begin{BFIGURE}
+\begin{center}
+\begin{tabular}{|l| |l|}
+Shorthand & Concrete Syntax Rule \\
+\hline
+\mbox{\textit{DS}} & declaration-sequence \\
+\mbox{\textit{EC}} & ensures-clause \\
+\mbox{\textit{ES}} & expects-sequence \\
+\mbox{\textit{FI}} & fun-interface \\
+\mbox{\textit{FR}} & frame \\
+\mbox{\textit{FSB}} & fun-spec-body \\
+\mbox{\textit{MC}} & modifies-clause \\
+\mbox{\textit{P}} & primary \\
+\mbox{\textit{RC}} & requires-clause \\
+\mbox{\textit{S}} & sort-name \\
+\mbox{\textit{SC-B}} & sc-bracketed \\
+\mbox{\textit{SCS}} & spec-case-sequence \\
+\mbox{\textit{SC}} & spec-case \\
+\mbox{\textit{SEC}} & secondary \\
+\mbox{\textit{SLS}} & string-literal-sequence \\
+\mbox{\textit{SRL}} & storage-reference-list \\
+\mbox{\textit{SR}} & storage-reference \\
+\mbox{\textit{TC}} & trashes-clause \\
+\mbox{\textit{US}} & uses-sequence \\
+\end{tabular}
+\end{center}
+\caption{Abbreviations for Concrete Syntax Rules}
+\label{abb-fig}
+\end{BFIGURE}
+
+\begin{BFIGURE}
+\begin{grammar}
+\nonterm{T} \: \reserved{if} \nonterm{T$_1$} \reserved{then} \nonterm{T$_2$} \reserved{else} \nonterm{T$_3$} 
+\> \| \> \nonterm{T$_1$} \nonterm{EQ} \nonterm{T$_2$}
+\> \| \> \nonterm{T$_1$} \nonterm{OP$_{l}$} \nonterm{T$_2$}
+\> \| \> \nonterm{Q}$^+$ \reserved{(} \nonterm{T} \reserved{)}
+\> \| \> \nonterm{T} \reserved{satisfies} \nonterm{FI} \nonterm{FSB}
+\> \| \> \nonterm{T}\reserved{(} \nonterm{T}$^*$ \reserved{)}
+
+\nonterm{OP$_{lsl}$} \: \nonterm{OP$_{lsl}$$^+$} \nonterm{SEC}
+\> \| \> \nonterm{SEC}
+\> \| \> \nonterm{SEC$_1$} \nonterm{OP$_{lsl}$} \nonterm{SEC$_2$}
+\> \| \> \nonterm{SEC} \nonterm{OP$_{lsl}$} \nonterm{OP$_{lsl}$}
+
+\nonterm{Q} \: \nonterm{QS} (ID\reserved{:}sort)$^+$
+
+\nonterm{QS} \: \verb|\|\reserved{A} \|  \verb|\|\reserved{forall} \| \verb|\|\reserved{E} \|  \verb|\|\reserved{exists}
+
+\nonterm{EQ} \: \reserved{=} \| \reserved{==} \| \verb|\|\reserved{eq} \| \reserved{~=} \| \reserved{!=} \| \verb|\|\reserved{neq}
+
+\nonterm{OP$_{l}$} \: \verb|\|\reserved{and} \| \verb|\|\reserved{or} \|\verb|\|\reserved{implies} \| /\verb|\| \| \verb|\|/ \| =>
+
+\nonterm{IDSEQ} \:  (\nonterm{ID} \reserved{:}\nonterm{S} \reserved{be} \nonterm{T}) $^+$
+
+\nonterm{SCS} \: \nonterm{SC} \| \nonterm{SCS} \reserved{also} \nonterm{SC}
+
+\nonterm{ID} \: class\_name \|  built\_in\_type\_name \| identifier
+
+\nonterm{$\diamond$} \: \reserved{\^} \| \verb|\|\reserved{pre} \| \reserved{'} \| \verb|\|\reserved{post} \| \verb|\|\reserved{any}
+
+\nonterm{SLS} \: string\_literal$^*$
+
+\end{grammar}
+\caption{Partial Abstract Syntax for Type Rules}
+\label{fig-abs}
+\end{BFIGURE}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,282 @@
+\section{Introduction}
+\label{introduction}
+The goal of Larch/C++ \cite{Leavens96c} is to give the programmer a
+formal specification language that is expressive and useful in
+practice. The work described in this paper focuses on the addition of
+type checking capabilities to what was the Larch/C++ Checker. In
+this context a
+\emph{type} is a set of values that exhibit uniform behavior under
+a set of associated operations \cite{Watt90}. \emph{Type checking}
+defines a process by which a set of formal rules that describe the
+type system are applied to operations and statements in a given
+specification to decide whether the operations and statements are type
+consistent (the terms \emph{sort} and \emph{sort checking} will also
+be used interchangeably for type and type checking). The addition of
+this functionality allows programmers and specifiers to gain useful
+information as to whether the design of a program is sensible and type
+consistent before its actual implementation.  
+
+Work has been done in the following areas:
+
+\begin{itemize}
+\item The creation of a formal description of the Larch/C++ type system.
+
+\item The coding of basic functionality to support the 
+implementation of the Larch/C++ type system. This work has many
+smaller pieces including:
+
+\begin{itemize}
+\item Support for User Interaction 
+\begin{itemize}
+\item Improved usability and control over the Larch/C++ Checker via the
+creation of a number of command line arguments.
+\end{itemize}
+
+\item Support for Larch Shared Language Constructs
+\begin{itemize}
+\item Modification of the LSL Checker to follow Unix conventions and
+use less memory.
+\item Development of an interface between the existing Larch/C++ Checker and
+the LSL Checker.
+\end{itemize}
+
+\item Support for the Evolving C++ Language Standard
+\begin{itemize}
+\item Support for Draft ANSI Standard C++ \cite{C++Apr95}
+language constructs.
+\item Support for translation of C++ declarations into Larch/C++
+sorts.
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+The paper begins with a background section that introducing formal
+methods, specification, and the Larch/C++ behavioral interface
+specification language. Following the general introduction, the type
+systems of the Larch Shared Language and C++ are described
+briefly. These descriptions motivate a discussion of the basic
+functionality of the Larch/C++ type system. This functionality is then
+formalized in a description of the sort rules for Larch/C++. Finally
+the details of the implementation of the functionality mentioned in
+the list above are presented.
+
+\section{Background}
+\label{background}
+\subsection{Formal Methods}
+
+The information in this section is based upon Wing's
+paper \cite{Wing90a}. 
+
+Formal methods define processes that are used for software
+development. Built upon a mathematical basis, these processes are
+designed to reveal ambiguities, incompleteness, and inconsistencies in
+software as it is developed \cite{Wing90a}. A formal method will
+typically define the specific vocabulary and steps involved in
+designing a piece of software.
+
+Formal specifications may be a part of a specific formal
+method. Formal specification defines a method by which an abstraction
+of a problem may be created and expressed. This abstraction may serve
+as documentation of the problem, a means to communicate the problem
+clearly, and/or as a contract defining the problem. Specifications and
+their languages are based upon mathematical properties which makes
+them more precise and concise than informal specifications based upon
+natural languages. The rigorous definition and mathematical basis
+behind formal specification languages make it easier to apply machine
+analysis and manipulations to them than to specifications in an
+informal language \cite{Wing90a}.
+
+One common type of formal specification is
+model-based. \emph{Model-based} specification involves the creation
+of an abstract model of the problem that is independent of any actual
+implementation to serve as the specification. The abstract model
+becomes a way of expressing the real world in a manner that can be
+controlled and reasoned about. Once the model has been developed, a
+solution based upon this model can be formalized. Since the solution
+has a rigorous, formal, and mathematical basis, it may be reasoned
+about to decide if it meets the requirements. Once the solution has
+been deemed correct, the specification becomes a formal contract
+describing how the implementation should behave under certain
+conditions.
+
+There are many different layers at which one may specify a
+problem. Larch/C++ is based upon the idea of behavioral
+specification. \emph{Behavioral specifications} describe the
+constraints on the observable behavior of the items specified. In this
+way, they form a contract between an implementor and a user of the
+implementation.
+
+
+\subsection{Introduction to Larch/C++}
+\label{lcppintro}
+Larch/C++ \cite{Leavens96c} is a model-based, formal specification language tailored for
+the specification of the behavior of C++ program modules or
+application program interfaces (API's). Larch/C++ can not specify the
+behavior of an entire program; instead it allows for the precise,
+unambiguous documentation of the behavior C++ program modules
+(functions, classes, etc.). Larch/C++ adds syntax to C++ to allow the
+specification of complex C++ structures, the inheritance of
+specifications, and the clear specification of the interface to a
+class.
+
+Larch/C++ is a two-tiered specification language. Specifications
+consist of Larch Shared Language (LSL) \cite{Guttag-Horning93} traits
+which describe the abstract models, and interface specifications which
+formalize the behavioral contracts. This two-tiered approach allows
+for the clear separation of the definition of the abstract model and its
+vocabulary from the actual details of the programming language modeled
+by the interface language. One reason for the separation is so that
+the abstract models may be written so that they can be reused in other
+specifications. If the abstract models were written in a language
+closer to the actual implementation, it would be more difficult to
+reuse the same model in a specification for an implementation written
+in a different language.
+
+\subsubsection{The Larch Shared Language}
+\label{lslintro}
+The Larch Shared Language \cite{Guttag-Horning93} allows an user to
+supply basic semantic information, and a specialized vocabulary for
+describing abstract values. The basic unit of LSL is a
+\emph{trait}. Traits contain information on \emph{sorts}, which are
+the basic units of abstraction, and \emph{operators} which define
+various operations upon these sorts. Figure~\ref{CounterTrait}
+illustrates the LSL portion of a specification for a simple counter
+\cite{Leavens96c}. This particular trait illustrates four common
+parts that are in many traits. The
+\reserved{includes} statement allows for a trait to build upon and
+reuse previously written traits. All of the information from the
+traits listed in this statement are available in the following
+sections of the current trait. Items from the included traits may be
+renamed syntactically to make the new trait more readable. This
+provides a shortcut for users, allowing them to reuse previous work.
+The \reserved{introduces} section defines the abstract model's
+operations. In this case, a Counter may be created via
+\reserved{newCounter}, or \reserved{inc}, and have its
+value reported via \reserved{cnt\_value}. The
+\reserved{asserts} section supplies meaning to these
+operations by logically illustrating how the abstract values are
+manipulated by the operators. For now, note that a trait defines a
+model consisting of a set of abstract values and a set of operations
+upon those values. Examples of possible abstract values for the trait
+in Figure~\ref{CounterTrait} are \reserved{newCounter}, representing a
+brand new counter, and \reserved{inc(newCounter)} representing a
+counter that has been incremented once. These values are independent
+of any implementation of Counter.
+
+\begin{BFIGURE}
+\begin{verbatim}
+% @(#)$Id: CounterTrait.lsl,v 1.3 1994/12/09 02:48:06 leavens Exp $
+CounterTrait: trait
+  includes Natural(Nat), NoContainedObjects(Counter)
+  introduces
+    newCounter: -> Counter
+    inc: Counter -> Counter
+    cnt_value: Counter -> Nat
+    Limit: -> Nat
+  asserts
+    Counter generated by newCounter, inc
+    Counter partitioned by cnt_value
+    \forall c: Counter
+      cnt_value(newCounter) == 0;
+      cnt_value(inc(c)) == cnt_value(c) + 1;
+      0 < Limit;
+
+\end{verbatim}
+
+\caption{CounterTrait.lsl}
+\label{CounterTrait}
+\end{BFIGURE}
+
+
+\subsubsection{The Larch/C++ Behavioral Interface Specification Language}
+\label{lcppbisl}
+Figure~\ref{CounterSpec} contains the Larch/C++ specification
+for a class that implements the counter modeled by the previous trait
+\cite{Leavens96c}. Larch/C++ specifications are set off in special
+comment delimiters, \reserved{//@} and \reserved{/*@ $\dots$ @*/},
+allowing them to be embedded directly into C++ source code. Similar to
+LSL traits, a Larch/C++ specification has sections that are defined by
+keywords. In this example, the first section is a
+\emph{uses-clause}, which serves a function similar to the \reserved{\#include}
+directive in C++; it tells the Larch/C++ Checker the traits that will
+be used by this specification. Most individual function specifications
+consist of at least three pieces: a requires clause, a modifies
+clause, and an ensures clause. The \emph{requires clause} states the
+conditions that must be met before an individual function may be
+called. If these conditions are not met, there is no guarantee that
+the function will run correctly. The \emph{modifies} clause states
+explicitly all objects whose state may be created by the execution of
+this function. If an object is listed on this line it means that the
+execution of this function may change its value. Only objects listed
+on this line may change state, thus the modifies clause acts as a
+frame axiom. The \emph{ensures clause} serves to state the expected
+results of the function provided the conditions specified in the
+requires clause were met.
+
+A closer look at the \reserved{increment} function specification illustrates
+these sections.
+ 
+\begin{verbatim}
+  virtual void increment();
+  //@ behavior {
+  //@   requires cnt_value(self^) < Limit;
+  //@   modifies self;
+  //@   ensures  self' = inc(self^);
+  //@ }
+\end{verbatim}
+
+\noindent The first line is the C++ prototype for the function. The
+\reserved{behavior} keyword announces the beginning of the body of the
+specification. The requires clause states that for this function to be
+called the value of the counter must be less than the value of
+\reserved{Limit}. If it is not, then the behavior of the function is
+not specified. If the requires clause is met and function is called,
+the modifies clause states that the only possible item that can change
+is the counter itself. The ensures clause then states that if the
+previous conditions are met, the value of the counter after the
+invocation of this function will be the result of incrementing the
+counter. Note that within the specification, the \reserved{inc}
+function refers to the \reserved{inc} function introduced in the
+trait, not a C++ function.
+ 
+\begin{BFIGURE}
+\begin{verbatim}
+// @(#)$Id: Counter.lh,v 1.7 1997/01/12 22:27:38 leavens Exp $
+// See J.P. Lejacq's paper in SIGPLAN 26(10), Oct, 1991
+
+//@ uses CounterTrait;
+
+class Counter {
+public:
+  //@ invariant cnt_value(self\any) <= Limit;
+  //@ constraint cnt_value(self\pre) <= cnt_value(self\post);
+
+  Counter();
+  //@ behavior {
+  //@   modifies self;
+  //@   ensures  self' = newCounter;
+  //@ }
+
+  virtual int cnt_value() const;
+  //@ behavior {
+  //@   ensures result = cnt_value(self^);
+  //@ }
+
+  virtual void increment();
+  //@ behavior {
+  //@   requires cnt_value(self^) < Limit;
+  //@   modifies self;
+  //@   ensures  self' = inc(self^);
+  //@ }
+
+  virtual void reset();
+  //@ behavior {
+  //@   modifies self;
+  //@   ensures  cnt_value(self') = 0;
+  //@ }
+};
+
+\end{verbatim}
+\caption{Counter.lh}
+\label{CounterSpec}
+\end{BFIGURE}

@@ -1,0 +1,54 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces CounterTrait.lsl}}{5}
+\contentsline {figure}{\numberline {2}{\ignorespaces Counter.lh}}{7}
+\contentsline {figure}{\numberline {3}{\ignorespaces Partial output from the \textbf {\texttt {lsl -syms}} command}}{9}
+\contentsline {figure}{\numberline {4}{\ignorespaces Example1.lsl}}{10}
+\contentsline {figure}{\numberline {5}{\ignorespaces Example2.lsl}}{11}
+\contentsline {figure}{\numberline {6}{\ignorespaces Example3.lsl}}{13}
+\contentsline {figure}{\numberline {7}{\ignorespaces Example4.lsl}}{14}
+\contentsline {figure}{\numberline {8}{\ignorespaces A LSL Trait with an error in the declaration of variables}}{15}
+\contentsline {figure}{\numberline {9}{\ignorespaces An example of quantifier scope.}}{16}
+\contentsline {figure}{\numberline {10}{\ignorespaces SimpleSet.lh}}{20}
+\contentsline {figure}{\numberline {11}{\ignorespaces ProblemTrait.lsl}}{22}
+\contentsline {figure}{\numberline {12}{\ignorespaces Function \textbf {\texttt {foo}}: version 1}}{23}
+\contentsline {figure}{\numberline {13}{\ignorespaces Function \textbf {\texttt {foo}}: version 2}}{23}
+\contentsline {figure}{\numberline {14}{\ignorespaces The Larch/C++ name lookup algorithm}}{25}
+\contentsline {figure}{\numberline {15}{\ignorespaces Example traits for scope and variable lookup examples}}{26}
+\contentsline {figure}{\numberline {16}{\ignorespaces Scope and variable lookup: example 1}}{27}
+\contentsline {figure}{\numberline {17}{\ignorespaces Scope and variable lookup: example 2}}{29}
+\contentsline {figure}{\numberline {18}{\ignorespaces Scope and variable lookup: example 3}}{30}
+\contentsline {figure}{\numberline {19}{\ignorespaces Abbreviations for Concrete Syntax Rules}}{32}
+\contentsline {figure}{\numberline {20}{\ignorespaces Partial Abstract Syntax for Type Rules}}{33}
+\contentsline {figure}{\numberline {21}{\ignorespaces An example type rule}}{36}
+\contentsline {figure}{\numberline {22}{\ignorespaces Top level rules}}{37}
+\contentsline {figure}{\numberline {23}{\ignorespaces Traits used in type environment expansion example}}{38}
+\contentsline {figure}{\numberline {24}{\ignorespaces Example of type environment expansion}}{38}
+\contentsline {figure}{\numberline {25}{\ignorespaces Rules affecting the type environment}}{40}
+\contentsline {figure}{\numberline {26}{\ignorespaces Predicate rules}}{42}
+\contentsline {figure}{\numberline {27}{\ignorespaces Term rules}}{43}
+\contentsline {figure}{\numberline {28}{\ignorespaces sc-bracketed rules}}{45}
+\contentsline {figure}{\numberline {29}{\ignorespaces State functions}}{45}
+\contentsline {figure}{\numberline {30}{\ignorespaces Miscellaneous rules}}{47}
+\contentsline {figure}{\numberline {31}{\ignorespaces A sampling of literal rules}}{48}
+\contentsline {figure}{\numberline {32}{\ignorespaces More literal rules}}{48}
+\contentsline {figure}{\numberline {33}{\ignorespaces Storage reference rules, part one}}{49}
+\contentsline {figure}{\numberline {34}{\ignorespaces Storage reference rules, part two}}{50}
+\contentsline {figure}{\numberline {35}{\ignorespaces The structure of the Larch/C++ Checker}}{52}
+\contentsline {figure}{\numberline {36}{\ignorespaces The C++ \textbf {\texttt {namespace}} construction}}{54}
+\contentsline {figure}{\numberline {37}{\ignorespaces The structure of the symbol table}}{55}
+\contentsline {figure}{\numberline {38}{\ignorespaces The \textbf {\texttt {Symbol}} class hierarchy}}{56}
+\contentsline {figure}{\numberline {39}{\ignorespaces The \textbf {\texttt {CopySymbols}} functions}}{59}
+\contentsline {figure}{\numberline {40}{\ignorespaces One production for \textbf {\texttt {using}} directives}}{60}
+\contentsline {figure}{\numberline {41}{\ignorespaces The \textbf {\texttt {TmpFile}} header}}{63}
+\contentsline {figure}{\numberline {42}{\ignorespaces The \textbf {\texttt {call\_lsl}} function, part one}}{65}
+\contentsline {figure}{\numberline {43}{\ignorespaces The \textbf {\texttt {call\_lsl}} function, part two}}{67}
+\contentsline {figure}{\numberline {44}{\ignorespaces Class hierarchy for \textbf {\texttt {LCPPSort}}: first design}}{69}
+\contentsline {figure}{\numberline {45}{\ignorespaces Class hierarchy for \textbf {\texttt {LCPPSort}}: final design}}{70}
+\contentsline {figure}{\numberline {46}{\ignorespaces The \textbf {\texttt {ArrowSet}} class}}{72}
+\contentsline {figure}{\numberline {47}{\ignorespaces The \textbf {\texttt {operator <<}} function for \textbf {\texttt {class ArrowSet}}}}{73}
+\contentsline {figure}{\numberline {48}{\ignorespaces Sorts for global C++ declarations}}{77}
+\contentsline {figure}{\numberline {49}{\ignorespaces Sorts for formal parameter declarations}}{78}
+\contentsline {figure}{\numberline {50}{\ignorespaces Declarator qualifiers}}{78}
+\contentsline {figure}{\numberline {51}{\ignorespaces Function \textbf {\texttt {BuildSort}}, part one}}{80}
+\contentsline {figure}{\numberline {52}{\ignorespaces Function \textbf {\texttt {BuildSort}}, part two}}{81}
+\contentsline {figure}{\numberline {53}{\ignorespaces The Point.lcc specification}}{83}
+\contentsline {figure}{\numberline {54}{\ignorespaces Code from \textbf {\texttt {Declare}} checking for previous sort}}{84}

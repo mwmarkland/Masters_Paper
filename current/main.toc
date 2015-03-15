@@ -1,0 +1,37 @@
+\contentsline {section}{\numberline {1}Introduction}{1}
+\contentsline {section}{\numberline {2}Background}{2}
+\contentsline {subsection}{\numberline {2.1}Formal Methods}{2}
+\contentsline {subsection}{\numberline {2.2}Introduction to Larch/C++}{3}
+\contentsline {subsubsection}{\numberline {2.2.1}The Larch Shared Language}{4}
+\contentsline {subsubsection}{\numberline {2.2.2}The Larch/C++ Specification Language}{4}
+\contentsline {section}{\numberline {3}The Type System}{6}
+\contentsline {subsection}{\numberline {3.1}The LSL Type System}{8}
+\contentsline {subsection}{\numberline {3.2}The C++ Type System}{16}
+\contentsline {subsection}{\numberline {3.3}The Larch/C++ Type System}{18}
+\contentsline {subsubsection}{\numberline {3.3.1}Overview}{18}
+\contentsline {subsubsection}{\numberline {3.3.2}Examples}{24}
+\contentsline {subsubsection}{\numberline {3.3.3}Summary}{31}
+\contentsline {section}{\numberline {4}Formal Sort Rules for Larch/C++}{32}
+\contentsline {subsection}{\numberline {4.1}Notation}{34}
+\contentsline {subsection}{\numberline {4.2}The Formal Sort Rules}{36}
+\contentsline {subsubsection}{\numberline {4.2.1}Top Level Rules}{37}
+\contentsline {subsubsection}{\numberline {4.2.2}Rules Affecting the Type Environment}{41}
+\contentsline {subsubsection}{\numberline {4.2.3}Predicate Rules}{41}
+\contentsline {subsubsection}{\numberline {4.2.4}Term Rules}{41}
+\contentsline {subsubsection}{\numberline {4.2.5}sc\_bracketed Rules}{45}
+\contentsline {subsubsection}{\numberline {4.2.6}State Function Rules}{46}
+\contentsline {subsubsection}{\numberline {4.2.7}Miscellaneous Rules}{47}
+\contentsline {subsubsection}{\numberline {4.2.8}Literal Rules}{47}
+\contentsline {subsubsection}{\numberline {4.2.9}Storage Rules}{47}
+\contentsline {section}{\numberline {5}Implementation of the System}{50}
+\contentsline {subsection}{\numberline {5.1}Overview of the System}{51}
+\contentsline {subsection}{\numberline {5.2}Support for C++ \textbf {\texttt {namespace}}}{53}
+\contentsline {subsection}{\numberline {5.3}Support for LSL Constructs}{60}
+\contentsline {subsubsection}{\numberline {5.3.1}Interface to the LSL Checker}{60}
+\contentsline {subsubsection}{\numberline {5.3.2}Data Structures for Sorts}{66}
+\contentsline {subsubsection}{\numberline {5.3.3}The Operator Signature Parser}{71}
+\contentsline {subsubsection}{\numberline {5.3.4}Conversion of C++ declarations to LSL sorts}{76}
+\contentsline {subsubsection}{\numberline {5.3.5}Additional Work}{84}
+\contentsline {section}{\numberline {6}Future Work}{84}
+\contentsline {section}{\numberline {7}Conclusions}{85}
+\contentsline {section}{\numberline {8}Acknowledgments}{86}
